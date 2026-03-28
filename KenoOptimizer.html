@@ -195,6 +195,11 @@ tfoot td{font-weight:700;color:var(--ink);}
   .mh-cols{display:none;}
 }
 
+/* ─── BACK HOME ─── */
+.back-home{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);text-decoration:none;padding:5px 12px;border:1px solid var(--rule);background:var(--cream);transition:all .18s;}
+.back-home:hover{border-color:var(--ink);color:var(--ink);background:var(--cream2);}
+.back-home svg{flex-shrink:0;}
+
 /* ─── TOOLTIP ─── */
 .tip{position:relative;display:inline-block;cursor:help;}
 .tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:10px;line-height:1.5;padding:7px 10px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;z-index:99;font-family:var(--sans);font-weight:400;max-width:220px;white-space:normal;text-align:left;}
@@ -206,7 +211,10 @@ tfoot td{font-weight:700;color:var(--ink);}
 
 <header class="masthead">
   <div class="mh-top">
-    <div class="mh-strap">Phân Tích Định Lượng · Xác Suất Học</div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a href="index.html" class="back-home"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M6.5 1.5L3 5l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Trang chủ</a>
+      <div class="mh-strap">Phân Tích Định Lượng · Xác Suất Học</div>
+    </div>
     <div class="mh-date" id="mhDate"></div>
   </div>
   <div class="mh-center">
@@ -560,7 +568,17 @@ function renderWinner(b,m){
 function renderRec(m,bestB){
   const strip=document.getElementById('recStrip');
   strip.innerHTML='';
-  [3,5,6,8].forEach(b=>{
+  // Always include bestB; use a fixed showcase set and swap in bestB if not present
+  const showcase = [3,5,6,8];
+  if(!showcase.includes(bestB)){
+    // Replace the card least relevant (furthest from bestB, keep first and last as anchors)
+    const replaceIdx = showcase.slice(1,-1).reduce((worst,b,i)=>{
+      return Math.abs(b-bestB) > Math.abs(showcase[worst+1]-bestB) ? i : worst;
+    }, 0) + 1;
+    showcase[replaceIdx] = bestB;
+    showcase.sort((a,b)=>a-b);
+  }
+  showcase.forEach(b=>{
     const pp=p2single(b), pT=pAt1(pp,m);
     const nhi=PRIZES[b].find(x=>x.n.startsWith('Giải nhì'));
     const ratio=nhi ? coverRatio(b,B) : 0;

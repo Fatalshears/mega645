@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keno · Tối ưu xác suất</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper:   #faf8f4;
+  --cream:   #f2ede4;
+  --cream2:  #e8e0d4;
+  --ink:     #18140f;
+  --ink2:    #3a3020;
+  --ink3:    #7a6e58;
+  --rule:    #d6ccbc;
+  --red:     #bf3325;
+  --red-bg:  #fdf0ee;
+  --gold:    #a87c0a;
+  --gold-bg: #fdf8ec;
+  --teal:    #1a6357;
+  --teal-bg: #eef6f4;
+  --blue:    #1c4f82;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans:  'Be Vietnam Pro', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(160,148,128,.09) 39px,rgba(160,148,128,.09) 40px);
+  pointer-events:none;z-index:0;}
+
+/* ─── MASTHEAD ─── */
+.masthead{border-bottom:3px double var(--ink);position:relative;z-index:2;animation:sD .5s ease both;}
+@keyframes sD{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+.mh-top{display:flex;justify-content:space-between;align-items:center;padding:16px 40px;border-bottom:1px solid var(--rule);}
+.mh-strap{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);display:flex;align-items:center;gap:10px;}
+.mh-strap::before,.mh-strap::after{content:'';width:24px;height:1px;background:var(--ink3);}
+.mh-date{font-size:10px;color:var(--ink3);}
+.mh-center{padding:14px 40px 18px;text-align:center;}
+.headline{font-family:var(--serif);font-size:clamp(38px,7.5vw,84px);font-weight:900;letter-spacing:-.035em;line-height:.88;display:flex;align-items:baseline;justify-content:center;gap:14px;}
+.headline em{font-style:italic;color:var(--red);}
+.tagline{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink3);margin-top:8px;}
+.mh-cols{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;border-top:1px solid var(--rule);}
+.mh-col{padding:7px 20px;font-size:10px;color:var(--ink3);}
+.mh-col strong{color:var(--red);}
+.mh-divider{background:var(--rule);}
+
+/* ─── WRAP ─── */
+.wrap{max-width:1120px;margin:0 auto;padding:0 40px 80px;position:relative;z-index:1;}
+
+/* ─── INPUT ─── */
+.input-band{display:grid;grid-template-columns:1fr auto;border:1px solid var(--ink);border-top:none;animation:fU .5s .12s ease both;}
+@keyframes fU{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.input-main{padding:24px 28px;border-right:1px solid var(--ink);}
+.flbl{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;display:block;}
+.amt-row{display:flex;align-items:stretch;border:1.5px solid var(--ink);overflow:hidden;background:white;}
+.cur-tag{padding:0 14px;font-family:var(--serif);font-size:18px;font-weight:700;color:var(--ink3);border-right:1.5px solid var(--ink);display:flex;align-items:center;background:var(--cream);}
+.bInput{flex:1;border:none;outline:none;font-family:var(--serif);font-size:26px;font-weight:700;color:var(--ink);padding:0 14px;background:transparent;height:50px;letter-spacing:-.02em;}
+.bInput::placeholder{color:var(--rule);font-weight:400;}
+.presets{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px;align-items:center;}
+.plbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);}
+.preset{font-size:10px;font-weight:600;letter-spacing:.04em;padding:4px 11px;border:1px solid var(--rule);background:white;color:var(--ink3);cursor:pointer;transition:all .15s;}
+.preset:hover{border-color:var(--ink);color:var(--ink);background:var(--cream);}
+.preset.active{border-color:var(--ink);background:var(--ink);color:var(--paper);}
+.err{font-size:11px;color:var(--red);display:none;margin-top:8px;font-weight:600;}
+.input-cta{padding:24px 26px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;background:var(--cream);min-width:165px;}
+.cta-note{font-family:var(--serif);font-style:italic;font-size:11.5px;color:var(--ink3);text-align:center;line-height:1.6;}
+.go-btn{width:100%;border:2px solid var(--ink);background:var(--ink);color:var(--paper);font-family:var(--serif);font-size:15px;font-weight:700;font-style:italic;padding:13px 18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.go-btn::after{content:'';position:absolute;inset:0;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .28s ease;z-index:0;}
+.go-btn:hover::after{transform:scaleX(1);}
+.go-btn:hover{border-color:var(--red);}
+.go-btn span{position:relative;z-index:1;}
+
+/* ─── SECTION RULE ─── */
+.srule{display:flex;align-items:center;gap:14px;margin:32px 0 16px;}
+.srule-line{flex:1;height:1px;background:var(--rule);}
+.srule-line.bold{height:2px;background:var(--ink);}
+.srule-lbl{font-family:var(--serif);font-style:italic;font-size:11px;color:var(--ink3);white-space:nowrap;}
+
+/* ─── RESULTS ─── */
+.results{display:none;}
+.results.open{display:block;}
+
+/* ─── LEGEND STRIP ─── */
+.legend-strip{border:1px solid var(--ink);border-top:none;border-bottom:none;display:grid;grid-template-columns:repeat(3,1fr);animation:fU .3s ease both;}
+.legend-item{padding:14px 20px;border-right:1px solid var(--rule);border-bottom:1px solid var(--ink);}
+.legend-item:last-child{border-right:none;}
+.legend-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700;margin-bottom:6px;}
+.li-red{background:var(--red-bg);color:var(--red);}
+.li-gold{background:var(--gold-bg);color:var(--gold);}
+.li-teal{background:var(--teal-bg);color:var(--teal);}
+.legend-term{font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--ink);margin-bottom:3px;}
+.legend-desc{font-size:11px;color:var(--ink3);line-height:1.5;}
+
+/* ─── REC STRIP ─── */
+.rec-strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ink);border-top:none;}
+.rc{padding:20px 16px;border-right:1px solid var(--rule);cursor:pointer;transition:background .18s;position:relative;animation:fU .4s ease both;}
+.rc:nth-child(1){animation-delay:.05s}.rc:nth-child(2){animation-delay:.1s}.rc:nth-child(3){animation-delay:.15s}.rc:nth-child(4){animation-delay:.2s}
+.rc:last-child{border-right:none;}
+.rc:hover{background:var(--cream);}
+.rc.active{background:var(--ink);}
+.rc.active .rc-num,.rc.active .rc-lbl,.rc.active .rc-badge,
+.rc.active .rr-k,.rc.active .rr-v,.rc.active .rr-v.re,
+.rc.active .rr-v.go,.rc.active .rr-v.te,.rc.active .rr-plain{color:var(--paper)!important;}
+.rc.active .bar-fill{background:var(--gold)!important;}
+.rc.active .bar-track{background:rgba(255,255,255,.12)!important;}
+.rc-badge{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);min-height:13px;margin-bottom:7px;}
+.rc-num{font-family:var(--serif);font-size:48px;font-weight:900;line-height:.85;letter-spacing:-.04em;}
+.rc-lbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin:4px 0 16px;}
+.rr{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-top:1px solid var(--rule);font-size:11px;gap:6px;}
+.rr:first-of-type{border-top-color:var(--ink);}
+.rr-k{color:var(--ink3);flex-shrink:0;}
+.rr-right{text-align:right;}
+.rr-v{font-weight:700;font-variant-numeric:tabular-nums;display:block;}
+.rr-v.re{color:var(--red);}
+.rr-v.go{color:var(--gold);}
+.rr-v.te{color:var(--teal);}
+.rr-plain{font-size:10px;color:var(--ink3);font-style:italic;line-height:1.4;display:block;margin-top:1px;}
+.bar-track{height:3px;background:var(--rule);margin-top:12px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--red);width:0%;transition:width 1s cubic-bezier(.16,1,.3,1);}
+
+/* ─── WINNER BOX ─── */
+.winner-box{border:2px solid var(--red);background:var(--red-bg);padding:16px 22px;margin-top:0;border-top:none;display:flex;align-items:center;gap:16px;animation:fU .3s ease both;}
+.wb-icon{font-size:24px;flex-shrink:0;}
+.wb-text{font-size:12px;color:var(--ink2);line-height:1.7;}
+.wb-text strong{color:var(--red);}
+
+/* ─── DETAIL ─── */
+.detail-panel{border:1px solid var(--ink);border-top:none;animation:fU .3s ease both;}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:12px 22px;border-bottom:1px solid var(--rule);background:var(--cream);}
+.dh-title{font-family:var(--serif);font-size:14px;font-weight:700;font-style:italic;}
+.dh-meta{font-size:10px;color:var(--ink3);}
+.tickets-wrap{padding:16px 20px;display:flex;gap:9px;flex-wrap:wrap;}
+.ticket{border:1px solid var(--rule);background:white;padding:10px 12px;min-width:145px;flex-shrink:0;animation:pI .3s ease both;}
+@keyframes pI{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.tk-id{font-size:9px;font-weight:700;letter-spacing:.14em;color:var(--ink3);text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--rule);}
+.tk-balls{display:flex;flex-wrap:wrap;gap:3px;}
+.ball{width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:1px solid var(--rule);color:var(--ink);background:var(--paper);transition:transform .14s,background .14s,color .14s;}
+.ball:hover{transform:scale(1.3);background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+/* ─── TABLES ─── */
+.table-wrap{border:1px solid var(--ink);border-top:none;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead tr{background:var(--ink);}
+th{font-size:8px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;padding:10px 14px;text-align:left;white-space:nowrap;color:rgba(255,255,255,.55);}
+th:first-child{color:white;}
+.th-hint{font-weight:400;font-style:italic;color:rgba(255,255,255,.35);font-size:8px;letter-spacing:.04em;display:block;margin-top:1px;}
+tbody tr{border-bottom:1px solid var(--rule);transition:background .12s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--cream);}
+tbody tr.act-row{background:var(--gold-bg);}
+tbody tr.act-row td:first-child{color:var(--gold);font-weight:700;}
+td{padding:10px 14px;font-variant-numeric:tabular-nums;color:var(--ink2);white-space:nowrap;vertical-align:top;}
+td.mo{font-weight:600;color:var(--ink);}
+td.re{color:var(--red);font-weight:700;}
+td.go{color:var(--gold);font-weight:700;}
+td.te{color:var(--teal);font-weight:600;}
+td.di{color:var(--ink3);}
+.td-main{font-weight:600;color:var(--ink);display:block;}
+.td-hint{font-size:10px;color:var(--ink3);font-style:italic;display:block;margin-top:1px;white-space:normal;max-width:200px;line-height:1.4;}
+.bc{display:flex;align-items:center;gap:7px;}
+.mb{flex:1;height:5px;background:var(--cream);min-width:60px;overflow:hidden;}
+.mbf{height:100%;background:var(--red);transition:width .8s cubic-bezier(.16,1,.3,1);}
+.mbf.go{background:var(--gold);}
+.mbf.te{background:var(--teal);}
+tfoot tr{background:var(--cream);border-top:2px solid var(--ink);}
+tfoot td{font-weight:700;color:var(--ink);}
+
+/* ─── GLOSSARY ─── */
+.glossary{border:1px solid var(--rule);border-top:2px solid var(--gold);background:var(--gold-bg);padding:18px 22px;margin-top:0;}
+.glossary-title{font-family:var(--serif);font-size:13px;font-weight:700;font-style:italic;color:var(--gold);margin-bottom:12px;}
+.glossary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+.gterm{border-left:2px solid var(--gold);padding-left:10px;}
+.gterm-name{font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--ink);margin-bottom:2px;}
+.gterm-def{font-size:11px;color:var(--ink3);line-height:1.5;}
+
+/* ─── WARNING ─── */
+.warn{border:1px solid rgba(191,51,37,.25);border-top:3px solid var(--red);background:var(--red-bg);padding:16px 22px;font-size:11.5px;color:var(--ink2);line-height:1.8;}
+.warn strong{color:var(--red);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--paper);}
+::-webkit-scrollbar-thumb{background:var(--rule);}
+
+@media(max-width:720px){
+  .wrap{padding:0 14px 60px;}
+  .mh-top,.mh-center{padding-left:16px;padding-right:16px;}
+  .headline{font-size:36px;}
+  .input-band{grid-template-columns:1fr;}
+  .input-cta{border-top:1px solid var(--ink);}
+  .rec-strip{grid-template-columns:1fr 1fr;}
+  .legend-strip{grid-template-columns:1fr;}
+  .mh-cols{display:none;}
+}
+
+/* ─── TOOLTIP ─── */
+.tip{position:relative;display:inline-block;cursor:help;}
+.tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-size:10px;line-height:1.5;padding:7px 10px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;z-index:99;font-family:var(--sans);font-weight:400;max-width:220px;white-space:normal;text-align:left;}
+.tip:hover::after{opacity:1;}
+.tip-mark{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--rule);color:var(--ink3);font-size:9px;font-weight:700;margin-left:3px;vertical-align:middle;}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="mh-top">
+    <div class="mh-strap">Phân Tích Định Lượng · Xác Suất Học</div>
+    <div class="mh-date" id="mhDate"></div>
+  </div>
+  <div class="mh-center">
+    <div class="headline">K<em>eno</em>&nbsp;Tối Ưu</div>
+    <div class="tagline">Nhập ngân sách → nhận chiến lược chơi tối ưu theo mô hình Hypergeometric</div>
+  </div>
+  <div class="mh-cols">
+    <div class="mh-col">Vietlott · 80 số · Quay <strong>20/kỳ</strong> · 96 kỳ/ngày</div>
+    <div class="mh-divider"></div>
+    <div class="mh-col">Vé cơ bản: <strong>10.000₫</strong> · Bậc 3 – 10 số</div>
+    <div class="mh-divider"></div>
+    <div class="mh-col">Tối ưu theo <strong>tổng ngân sách</strong> · Không theo từng vé</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- INPUT -->
+  <div class="input-band">
+    <div class="input-main">
+      <label class="flbl" for="bInput">Tổng ngân sách bạn muốn bỏ ra</label>
+      <div class="amt-row">
+        <span class="cur-tag">₫</span>
+        <input class="bInput" id="bInput" type="number" placeholder="100,000" min="10000" step="10000">
+      </div>
+      <div class="presets">
+        <span class="plbl">Nhanh —</span>
+        <button class="preset" onclick="setB(50000)">50 k</button>
+        <button class="preset" onclick="setB(100000)">100 k</button>
+        <button class="preset" onclick="setB(200000)">200 k</button>
+        <button class="preset" onclick="setB(300000)">300 k</button>
+        <button class="preset" onclick="setB(500000)">500 k</button>
+        <button class="preset" onclick="setB(1000000)">1 M</button>
+        <button class="preset" onclick="setB(2000000)">2 M</button>
+      </div>
+      <div class="presets" style="margin-top:10px">
+        <span class="plbl">Gu chơi —</span>
+        <button class="preset gu-btn active" onclick="setGu(1.0,this)" title="Giải nhì ≥ vốn bỏ ra">🛡 Hòa vốn</button>
+        <button class="preset gu-btn" onclick="setGu(3.0,this)" title="Giải nhì ≥ 3× vốn">⚡ Lãi Tốt</button>
+        <button class="preset gu-btn" onclick="setGu(10.0,this)" title="Giải nhì ≥ 10× vốn">🎯 Săn Lớn</button>
+      </div>
+      <div class="err" id="errMsg">⚠ Phải là bội số của 10.000₫ và tối thiểu 10.000₫</div>
+    </div>
+    <div class="input-cta">
+      <div class="cta-note">Tính xác suất &<br>tạo bộ số tối ưu</div>
+      <button class="go-btn" onclick="calc()"><span>Phân tích →</span></button>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+
+    <!-- LEGEND -->
+    <div class="legend-strip">
+      <div class="legend-item">
+        <div class="legend-icon li-red">%</div>
+        <div class="legend-term">Xác suất trúng giải nhì <span class="tip" data-tip="P(≥1 giải nhì): xác suất ít nhất 1 trong m vé trúng giải nhì. Dùng xấp xỉ 1-(1-p)^m với p từ phân phối Hypergeometric chính xác."><span class="tip-mark">?</span></span></div>
+        <div class="legend-desc">Cứ 100 người chơi với cùng ngân sách và bậc này, khoảng bao nhiêu người trúng ít nhất một giải nhì.</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-icon li-teal">×</div>
+        <div class="legend-term">Giải nhì / Vốn <span class="tip" data-tip="Tỷ lệ: Giá trị giải nhì ÷ Ngân sách bỏ ra. ≥ 1.0× = trúng 1 lần đã bù vốn. Đây là tiêu chí lọc chính của thuật toán."><span class="tip-mark">?</span></span></div>
+        <div class="legend-desc">Nếu trúng đúng 1 giải nhì, bạn nhận về bao nhiêu lần vốn. ≥ 1.0× = hòa vốn, ≥ 2.0× = lãi thực sự.</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-icon li-gold">₫</div>
+        <div class="legend-term">Kỳ vọng hoàn lại (EV) <span class="tip" data-tip="EV tổng = (EV/vé) × số vé. Đây là chỉ số dài hạn — nếu chơi vạn lần, trung bình bạn nhận lại bao nhiêu % ngân sách."><span class="tip-mark">?</span></span></div>
+        <div class="legend-desc">Trung bình nhận lại bao nhiêu trên mỗi đồng bỏ ra — về lâu dài. Luôn &lt; 100% vì Keno có lợi thế nhà cái.</div>
+      </div>
+    </div>
+
+    <div class="srule"><div class="srule-line bold"></div><div class="srule-lbl">I. Đề xuất bậc chơi (tối ưu theo tổng ngân sách)</div><div class="srule-line"></div></div>
+    <div class="rec-strip" id="recStrip"></div>
+    <div class="winner-box" id="winnerBox"></div>
+
+    <div class="srule"><div class="srule-line bold"></div><div class="srule-lbl">II. Bộ số đề xuất cho từng vé</div><div class="srule-line"></div></div>
+    <div class="detail-panel">
+      <div class="dh">
+        <div class="dh-title" id="dTitle">—</div>
+        <div class="dh-meta" id="dMeta"></div>
+      </div>
+      <div class="tickets-wrap" id="tGrid"></div>
+    </div>
+
+    <div class="srule"><div class="srule-line bold"></div><div class="srule-lbl">III. So sánh toàn bộ bậc theo ngân sách này</div><div class="srule-line"></div></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Bậc</th>
+            <th>Số vé<br><span class="th-hint">với ngân sách này</span></th>
+            <th>P(≥1 giải nhì)<br><span class="th-hint">cứ 100 người, X người trúng</span></th>
+            <th>Giải nhì / Vốn<br><span class="th-hint">trúng 1 lần cover được bao nhiêu?</span></th>
+            <th>EV hoàn lại<br><span class="th-hint">kỳ vọng trung bình dài hạn</span></th>
+            <th>P(hòa vốn+)<br><span class="th-hint">không bị lỗ toàn bộ</span></th>
+            <th>Số phủ<br><span class="th-hint">unique / 80 số</span></th>
+          </tr>
+        </thead>
+        <tbody id="covBody"></tbody>
+      </table>
+    </div>
+
+    <div class="srule"><div class="srule-line bold"></div><div class="srule-lbl">IV. Chi tiết cơ cấu giải thưởng — bậc đang xem</div><div class="srule-line"></div></div>
+    <div class="table-wrap" style="margin-bottom:0">
+      <table>
+        <thead>
+          <tr>
+            <th>Trùng</th>
+            <th>Loại giải</th>
+            <th>Giải thưởng</th>
+            <th>P xảy ra<br><span class="th-hint">mỗi vé riêng lẻ</span></th>
+            <th>Nói nôm na</th>
+            <th>EV đóng góp<br><span class="th-hint">kỳ vọng từ mức giải này</span></th>
+          </tr>
+        </thead>
+        <tbody id="prizeBody"></tbody>
+        <tfoot id="prizeFoot"></tfoot>
+      </table>
+    </div>
+
+    <div class="srule"><div class="srule-line bold"></div><div class="srule-lbl">V. Giải thích thuật ngữ</div><div class="srule-line"></div></div>
+    <div class="glossary">
+      <div class="glossary-title">Đọc hiểu các chỉ số — không cần biết toán</div>
+      <div class="glossary-grid">
+        <div class="gterm">
+          <div class="gterm-name">Bậc (n)</div>
+          <div class="gterm-def">Số lượng số bạn chọn trên một vé. Bậc 3 = chọn 3 số. Càng cao, giải thưởng càng lớn nhưng xác suất càng nhỏ.</div>
+        </div>
+        <div class="gterm">
+          <div class="gterm-name">P(≥1 giải nhì)</div>
+          <div class="gterm-def">Xác suất bạn trúng ÍT NHẤT MỘT giải nhì trong toàn bộ phiên. Ví dụ 76% = cứ 100 người chơi như vậy, 76 người trúng ít nhất 1 lần.</div>
+        </div>
+        <div class="gterm">
+          <div class="gterm-name">Kỳ vọng (EV)</div>
+          <div class="gterm-def">Số tiền trung bình bạn nhận lại nếu chơi rất nhiều lần. EV 65% nghĩa là trung bình mỗi 100k bỏ ra, bạn nhận lại 65k — lỗ 35k về lâu dài.</div>
+        </div>
+        <div class="gterm">
+          <div class="gterm-name">P(hòa vốn+)</div>
+          <div class="gterm-def">Xác suất tổng tiền thưởng trong phiên ≥ tổng tiền vé. Không phải là "không lỗ gì" — chỉ là lần chơi đó bạn không lỗ toàn bộ ngân sách.</div>
+        </div>
+        <div class="gterm">
+          <div class="gterm-name">Phủ số</div>
+          <div class="gterm-def">Có bao nhiêu số khác nhau nằm trong tập hợp tất cả các vé của bạn. Phủ cao = ít chồng lặp = coverage rộng hơn trên 80 số.</div>
+        </div>
+        <div class="gterm">
+          <div class="gterm-name">Giải nhì / Vốn (Cover Ratio)</div>
+          <div class="gterm-def">Tỷ lệ: Giải nhì ÷ Ngân sách. Ví dụ: 100k vốn, bậc 5 giải nhì 100k → ratio = 1.0× (hòa vốn). Bậc 6 giải nhì 450k → ratio = 4.5× (lãi 350k). Đây là tiêu chí bộ lọc cốt lõi của thuật toán: chỉ chọn bậc mà <em>trúng 1 lần là đủ bù vốn</em>.</div>
+        </div>
+        <div class="gterm">
+          <div class="gterm-name">Gu chơi</div>
+          <div class="gterm-def">"Hòa vốn": chọn bậc có ratio ≥ 1× (đủ bù vốn) và P cao nhất. "Lãi Tốt": ratio ≥ 3× (lãi thực). "Săn Lớn": ratio ≥ 10× (ăn đậm). Gu càng cao thì P trúng càng thấp nhưng phần thưởng càng lớn.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="warn" style="margin-top:0;border-top-color:var(--red);">
+      <strong>⚠ Cảnh báo</strong><br>
+      Keno là trò chơi may rủi. Tất cả các bậc đều có kỳ vọng toán học âm — nhà cái luôn có lợi thế. Công cụ này giúp bạn chọn chiến lược <em>tốt nhất trong số các lựa chọn xấu</em>, không phải cách thắng. Chỉ chơi với số tiền bạn sẵn sàng mất hoàn toàn.
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const PRIZES = {
+  3: [{k:2,n:'Giải nhì',p:30000},{k:3,n:'Jackpot',p:200000}],
+  4: [{k:2,n:'Hòa vốn',p:10000},{k:3,n:'Giải nhì',p:30000},{k:4,n:'Jackpot',p:150000}],
+  5: [{k:3,n:'Giải ba',p:20000},{k:4,n:'Giải nhì',p:100000},{k:5,n:'Jackpot',p:4400000}],
+  6: [{k:3,n:'Hòa vốn',p:10000},{k:4,n:'Giải ba',p:40000},{k:5,n:'Giải nhì',p:450000},{k:6,n:'Jackpot',p:12500000}],
+  7: [{k:3,n:'Hòa vốn',p:10000},{k:4,n:'Giải bốn',p:20000},{k:5,n:'Giải ba',p:100000},{k:6,n:'Giải nhì',p:1200000},{k:7,n:'Jackpot',p:40000000}],
+  8: [{k:0,n:'Đặc biệt',p:10000},{k:4,n:'Hòa vốn',p:10000},{k:5,n:'Giải ba',p:50000},{k:6,n:'Giải ba',p:500000},{k:7,n:'Giải nhì',p:5000000},{k:8,n:'Jackpot',p:200000000}],
+  9: [{k:0,n:'Đặc biệt',p:10000},{k:5,n:'Hòa vốn',p:10000},{k:6,n:'Giải ba',p:50000},{k:7,n:'Giải ba',p:300000},{k:8,n:'Giải nhì',p:5000000},{k:9,n:'Jackpot',p:800000000}],
+  10:[{k:0,n:'Đặc biệt',p:10000},{k:5,n:'Giải ba',p:20000},{k:6,n:'Giải ba',p:60000},{k:7,n:'Giải ba',p:400000},{k:8,n:'Giải nhì+',p:10000000},{k:9,n:'Giải nhì',p:200000000},{k:10,n:'Jackpot',p:2000000000}],
+};
+const SK={3:2,4:3,5:4,6:5,7:6,8:7,9:8,10:9};
+
+// ─── MATH ────────────────────────────────────────────────────────────────────
+function logC(n,k){
+  if(k<0||k>n)return -Infinity;
+  if(!k||k===n)return 0;
+  k=Math.min(k,n-k);
+  let r=0; for(let i=0;i<k;i++) r+=Math.log(n-i)-Math.log(i+1);
+  return r;
+}
+function hP(n,k){ return Math.exp(logC(20,k)+logC(60,n-k)-logC(80,n)); }
+function p2single(n){ return hP(n,SK[n]); }
+
+// P(≥1 giải nhì) với m vé — xấp xỉ độc lập (chính xác cho bậc cao, đủ tốt cho bậc thấp)
+// Với p nhỏ (<5%) sai số không đáng kể; bậc 3-4 bị loại bởi bộ lọc cover nên không ảnh hưởng khuyến nghị
+function pAt1(p,m){ return 1-Math.pow(1-p,m); }
+
+// Giải nhì value / budget — chỉ số bảo vệ vốn cốt lõi
+function coverRatio(b,budget){
+  const nhi=PRIZES[b].find(x=>x.n.startsWith('Giải nhì'));
+  return nhi ? nhi.p/budget : 0;
+}
+
+// EV per vé
+function EVperVe(n){ return PRIZES[n].reduce((s,x)=>s+hP(n,x.k)*x.p, 0); }
+// EV tổng ngân sách
+function EVtotal(n,m){ return EVperVe(n)*m; }
+// Tỷ lệ hoàn lại % trên ngân sách
+function returnRate(n,m){ return EVtotal(n,m)/(m*10000); }
+
+// P(hòa vốn+): tổng thưởng ≥ budget = m*10000
+// CDF đúng: ngưỡng bắt đầu từ p0 (không trúng), sau đó cộng dần từng tier.
+function pBreakeven(n,m,budget){
+  const TRIALS = 3000;
+  let hits = 0;
+  const pr = PRIZES[n];
+  // Xây CDF theo đúng thứ tự xác suất: [0, p0) → không trúng, [p0, p0+p1) → tier 1, ...
+  const tiers = pr.map(x=>({prob:hP(n,x.k), prize:x.p}));
+  const totalP = tiers.reduce((s,x)=>s+x.prob,0);
+  const p0 = 1 - totalP; // xác suất không trúng gì
+  // Mỗi tier có ngưỡng bắt đầu từ p0 trở lên
+  let acc = p0;
+  const cdf = tiers.map(x=>{acc+=x.prob; return {threshold:acc, prize:x.prize};});
+  for(let t=0;t<TRIALS;t++){
+    let total = 0;
+    for(let v=0;v<m;v++){
+      const r=Math.random();
+      if(r<p0){continue;}
+      for(const c of cdf){
+        if(r<c.threshold){total+=c.prize;break;}
+      }
+    }
+    if(total>=budget) hits++;
+  }
+  return hits/TRIALS;
+}
+
+// ─── FORMAT ──────────────────────────────────────────────────────────────────
+function fp(p){
+  if(p>=.1) return (p*100).toFixed(1)+'%';
+  if(p>=.01) return (p*100).toFixed(2)+'%';
+  if(p>=.0001) return (p*100).toFixed(3)+'%';
+  return (p*100).toExponential(2)+'%';
+}
+function fm(v){
+  if(v>=1e9) return (v/1e9).toFixed(2)+' tỷ';
+  if(v>=1e6) return (v/1e6).toFixed(2)+'M';
+  if(v>=1e3) return Math.round(v/1e3)+'k';
+  return Math.round(v)+'₫';
+}
+function fmFull(v){
+  return v.toLocaleString('vi-VN')+'₫';
+}
+
+// Plain language cho xác suất
+function plainP(p, total){
+  const x = Math.round(p*total);
+  if(total<=1) return p>=.5?'Khả năng cao':'Khả năng thấp';
+  return `≈ ${x}/${total} lần`;
+}
+function plain100(p){
+  const x=Math.round(p*100);
+  return `${x} trong 100 phiên`;
+}
+
+// ─── TICKETS ─────────────────────────────────────────────────────────────────
+function genTk(n,m){
+  const freq=new Array(81).fill(0), res=[];
+  for(let t=0;t<m;t++){
+    const c=Array.from({length:80},(_,i)=>i+1)
+      .sort(()=>Math.random()-.5)
+      .sort((a,b)=>freq[a]-freq[b]);
+    const tk=c.slice(0,n).sort((a,b)=>a-b);
+    tk.forEach(x=>freq[x]++);
+    res.push(tk);
+  }
+  return res;
+}
+function cov(tks){ return new Set(tks.flat()).size; }
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let TK={}, ACT=3, B=0;
+function setB(v){ document.getElementById('bInput').value=v; }
+
+// ─── GU CHƠI (risk preference) ───────────────────────────────────────────────
+// Ngưỡng tỷ lệ Giải nhì / Ngân sách tối thiểu để được chọn làm bestB
+// "Hòa vốn" ≥ 1.0x | "Lãi Tốt" ≥ 3.0x | "Săn Lớn" ≥ 10.0x
+let GU_THRESHOLD = 1.0;
+function setGu(val, el){
+  GU_THRESHOLD = val;
+  document.querySelectorAll('.gu-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  if(B) calc(); // re-run nếu đã có kết quả
+}
+
+// Thuật toán bestB mới:
+// 1. Lọc các bậc có coverRatio >= GU_THRESHOLD (giải nhì bù được vốn ở mức kỳ vọng)
+// 2. Trong số đó, chọn bậc có P(≥1 giải nhì) cao nhất
+// 3. Nếu không bậc nào qua lọc, hạ ngưỡng về 1.0x (fallback)
+function findBestB(m, budget){
+  let bestB=null, bestP=-1;
+  let fbB=5, fbP=-1; // fallback với threshold=1.0
+  for(let b=3;b<=10;b++){
+    const p=pAt1(p2single(b),m);
+    const ratio=coverRatio(b,budget);
+    if(ratio>=1.0 && p>fbP){fbP=p;fbB=b;}
+    if(ratio>=GU_THRESHOLD && p>bestP){bestP=p;bestB=b;}
+  }
+  return bestB!==null ? bestB : fbB;
+}
+
+function calc(){
+  const raw=parseInt(document.getElementById('bInput').value,10);
+  const err=document.getElementById('errMsg');
+  if(!raw||raw<10000||raw%10000!==0){err.style.display='block';return;}
+  err.style.display='none';
+  B=raw;
+  const m=raw/10000;
+  TK={};
+  for(let b=3;b<=10;b++) TK[b]=genTk(b,m);
+
+  const bestB=findBestB(m,B);
+  ACT=bestB;
+  renderRec(m,bestB);
+  renderCov(m,bestB);
+  renderDetail(bestB,m);
+  renderWinner(bestB,m);
+
+  const el=document.getElementById('results');
+  el.classList.add('open');
+  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  setTimeout(()=>{
+    document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w);
+    document.querySelectorAll('.mbf').forEach(b=>b.style.width=b.dataset.w);
+  },130);
+}
+
+function renderWinner(b,m){
+  const p2=p2single(b), pT=pAt1(p2,m);
+  const nhi=PRIZES[b].find(x=>x.n.startsWith('Giải nhì'));
+  const ratio=nhi ? coverRatio(b,B) : 0;
+  const nhiStr=nhi?fm(nhi.p):'—';
+  const ratioStr=ratio>=1?`<span style="color:var(--teal)">+${((ratio-1)*100).toFixed(0)}% lãi</span>`:`<span style="color:var(--red)">−${((1-ratio)*100).toFixed(0)}% lỗ</span>`;
+  const nhiPer=p2single(b);
+  const box=document.getElementById('winnerBox');
+  box.innerHTML=`
+    <div class="wb-icon">★</div>
+    <div class="wb-text">
+      <strong>Bậc ${b} — khuyến nghị cho ngân sách ${fm(B)}.</strong>
+      Giải nhì bậc ${b} trả <strong>${nhiStr}</strong> — tỷ lệ <strong>${ratio.toFixed(1)}×</strong> vốn bỏ ra (${ratioStr} nếu trúng).
+      Xác suất trúng giải nhì: <strong>${fp(nhiPer)}</strong>/vé đơn → với ${m} vé: <strong>${fp(pT)}</strong>
+      (${plain100(pT)}).
+    </div>
+  `;
+}
+
+function renderRec(m,bestB){
+  const strip=document.getElementById('recStrip');
+  strip.innerHTML='';
+  [3,5,6,8].forEach(b=>{
+    const pp=p2single(b), pT=pAt1(pp,m);
+    const nhi=PRIZES[b].find(x=>x.n.startsWith('Giải nhì'));
+    const ratio=nhi ? coverRatio(b,B) : 0;
+    const isBest=b===bestB;
+    const coverOk=ratio>=1.0;
+    const badgeTxt=isBest?'★ KHUYẾN NGHỊ':(coverOk?'✓ Cover vốn':'✗ Không cover');
+    const card=document.createElement('div');
+    card.className='rc'+(isBest?' active':'');
+    card.dataset.bac=b;
+    card.innerHTML=`
+      <div class="rc-badge">${badgeTxt}</div>
+      <div class="rc-num">${b}</div>
+      <div class="rc-lbl">Bậc · ${m} vé · ${fm(B)}</div>
+      <div class="rr">
+        <span class="rr-k">Cơ hội trúng giải nhì</span>
+        <div class="rr-right">
+          <span class="rr-v re">${fp(pT)}</span>
+          <span class="rr-plain">${plain100(pT)}</span>
+        </div>
+      </div>
+      <div class="rr">
+        <span class="rr-k">Giải nhì / Vốn</span>
+        <div class="rr-right">
+          <span class="rr-v ${coverOk?'te':'re'}">${ratio.toFixed(1)}×</span>
+          <span class="rr-plain">${nhi?fm(nhi.p):'—'} nếu trúng</span>
+        </div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" data-w="${Math.min(pT*100,100).toFixed(1)}%" style="width:0%"></div></div>
+    `;
+    card.onclick=()=>{
+      document.querySelectorAll('.rc').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      ACT=b;
+      renderDetail(b,m);
+      renderWinner(b,m);
+      document.querySelectorAll('#covBody tr').forEach(r=>r.classList.toggle('act-row',parseInt(r.dataset.bac)===b));
+    };
+    strip.appendChild(card);
+  });
+}
+
+function renderDetail(b,m){
+  document.getElementById('dTitle').textContent=`Bậc ${b} · ${m} vé đề xuất`;
+  const cv=cov(TK[b]);
+  document.getElementById('dMeta').textContent=`${cv}/80 số được phủ (${(cv/80*100).toFixed(0)}%) · Các số phân bổ đều để tối đa coverage`;
+  const grid=document.getElementById('tGrid');
+  grid.innerHTML='';
+  TK[b].forEach((tk,i)=>{
+    const d=document.createElement('div');
+    d.className='ticket';
+    d.style.animationDelay=(i*.018)+'s';
+    d.innerHTML=`<div class="tk-id">Vé #${String(i+1).padStart(2,'0')}</div><div class="tk-balls">${
+      tk.map(n=>`<div class="ball">${String(n).padStart(2,'0')}</div>`).join('')
+    }</div>`;
+    grid.appendChild(d);
+  });
+  renderPrize(b,m);
+}
+
+function renderCov(m,bestB){
+  const body=document.getElementById('covBody');
+  body.innerHTML='';
+  for(let b=3;b<=10;b++){
+    const pp=p2single(b), pT=pAt1(pp,m);
+    const rate=returnRate(b,m);
+    const cv=cov(TK[b]);
+    const nhi=PRIZES[b].find(x=>x.n.startsWith('Giải nhì'));
+    const ratio=nhi ? coverRatio(b,B) : 0;
+    const isBest=b===bestB;
+    const coverOk=ratio>=1.0;
+    const pHoa = pBreakeven(b,m,m*10000);
+    const tr=document.createElement('tr');
+    tr.dataset.bac=b;
+    if(isBest) tr.classList.add('act-row');
+    tr.innerHTML=`
+      <td class="mo">${isBest?'★ ':''} Bậc ${b}</td>
+      <td>${m} vé</td>
+      <td>
+        <div class="bc">
+          <div>
+            <span class="td-main ${isBest?'re':''}">${fp(pT)}</span>
+            <span class="td-hint">${plain100(pT)}</span>
+          </div>
+          <div class="mb"><div class="mbf" data-w="${Math.min(pT*100,100).toFixed(1)}%" style="width:0%"></div></div>
+        </div>
+      </td>
+      <td>
+        <span class="td-main ${coverOk?'te':'re'}">${ratio.toFixed(1)}×</span>
+        <span class="td-hint">${nhi?fm(nhi.p):'—'} ${coverOk?'✓ cover vốn':'✗ không cover'}</span>
+      </td>
+      <td>
+        <span class="td-main go">${(rate*100).toFixed(1)}%</span>
+        <span class="td-hint">EV: ~${Math.round(rate*100)}k / 100k</span>
+      </td>
+      <td>
+        <div class="bc">
+          <span class="te">${fp(pHoa)}</span>
+          <div class="mb"><div class="mbf te" data-w="${Math.min(pHoa*100,100).toFixed(1)}%" style="width:0%"></div></div>
+        </div>
+      </td>
+      <td>
+        <div class="bc">
+          <span>${cv}/80</span>
+          <div class="mb"><div class="mbf go" data-w="${(cv/80*100).toFixed(0)}%" style="width:0%"></div></div>
+        </div>
+      </td>
+    `;
+    tr.onclick=()=>{
+      document.querySelectorAll('#covBody tr').forEach(r=>r.classList.remove('act-row'));
+      tr.classList.add('act-row');
+      document.querySelectorAll('.rc').forEach(c=>c.classList.remove('active'));
+      const mc=document.querySelector(`.rc[data-bac="${b}"]`);
+      if(mc) mc.classList.add('active');
+      ACT=b;
+      renderDetail(b,m);
+      renderWinner(b,m);
+      setTimeout(()=>document.querySelectorAll('.mbf').forEach(f=>f.style.width=f.dataset.w),80);
+    };
+    body.appendChild(tr);
+  }
+}
+
+function renderPrize(b,m){
+  const body=document.getElementById('prizeBody'), foot=document.getElementById('prizeFoot');
+  body.innerHTML=''; foot.innerHTML='';
+  const maxP=Math.max(...PRIZES[b].map(x=>hP(b,x.k)));
+  PRIZES[b].forEach(x=>{
+    const prob=hP(b,x.k), ev=prob*x.p;
+    const isN=x.n.startsWith('Giải nhì'), isJ=x.n==='Jackpot';
+    // Plain language
+    const per = prob>0 ? Math.round(1/prob) : 999999;
+    let plain;
+    if(prob>=.1) plain=`Cứ ~${Math.round(1/prob)} vé thì trúng 1 lần`;
+    else if(prob>=.001) plain=`Khoảng 1 trong ${per.toLocaleString()} vé`;
+    else plain=`Rất hiếm — 1 trong ${per.toLocaleString()} vé`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="mo ${isJ?'re':isN?'go':''}">${x.k}/${b}</td>
+      <td>${x.n}</td>
+      <td class="${isJ?'re':isN?'go':''}">${fm(x.p)}</td>
+      <td><span class="${isN?'re':'di'}">${fp(prob)}</span></td>
+      <td class="di" style="font-style:italic;font-size:11px">${plain}</td>
+      <td><div class="bc"><span class="te">${fm(Math.round(ev))}</span><div class="mb" style="min-width:80px"><div class="mbf te" style="width:${(prob/maxP*100).toFixed(0)}%"></div></div></div></td>
+    `;
+    body.appendChild(tr);
+  });
+  const evV=EVperVe(b), evT=EVtotal(b,m), rate=returnRate(b,m);
+  const tf=document.createElement('tr');
+  tf.innerHTML=`
+    <td colspan="3" class="di" style="font-size:10px;letter-spacing:.07em">TỔNG KỲ VỌNG · ${m} VÉ · NGÂN SÁCH ${fm(B)}</td>
+    <td colspan="2" class="go" style="font-size:12px">${fm(Math.round(evT))} nhận lại</td>
+    <td class="re" style="font-size:12px">${(rate*100).toFixed(1)}% hoàn lại</td>
+  `;
+  foot.appendChild(tf);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+const d=new Date();
+document.getElementById('mhDate').textContent=
+  d.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('bInput').addEventListener('keydown',e=>{if(e.key==='Enter')calc();});
+</script>
+</body>
+</html>

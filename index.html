@@ -417,6 +417,81 @@ h1 em { font-style: normal; color: var(--red); }
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ══ COVERAGE PANEL ══ */
+.coverage-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  display: none;
+}
+.coverage-panel.visible { display: block; }
+.coverage-title {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.coverage-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 16px;
+  background: var(--red);
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+.coverage-rows { display: flex; flex-direction: column; gap: 14px; }
+.coverage-row { display: flex; flex-direction: column; gap: 6px; }
+.coverage-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.coverage-row-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+.coverage-row-nums {
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem;
+  color: var(--text);
+  font-weight: 500;
+}
+.coverage-row-nums .frac-denom { color: var(--text3); font-weight: 400; }
+.coverage-row-nums .pct {
+  font-size: .72rem;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+.pct-low  { background: #eff6ff; color: #1d4ed8; }
+.pct-mid  { background: #f0fdf4; color: var(--green); }
+.pct-high { background: #fff7ed; color: #c2410c; }
+.coverage-bar-track {
+  height: 6px;
+  background: var(--bg2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.coverage-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+  background: var(--red);
+}
+.coverage-bar-fill.bar-4 { background: linear-gradient(90deg, #e8272b, #f59e0b); }
+.coverage-bar-fill.bar-5 { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+.coverage-bar-fill.bar-6 { background: linear-gradient(90deg, #0f766e, #14b8a6); }
+
 /* ══ PROGRESS OVERLAY ══ */
 .progress-overlay {
   display: none;
@@ -600,6 +675,12 @@ h1 em { font-style: normal; color: var(--red); }
     </div>
   </div>
 
+  <!-- COVERAGE BREAKDOWN -->
+  <div class="coverage-panel" id="coveragePanel">
+    <div class="coverage-title">Độ phủ tổ hợp</div>
+    <div class="coverage-rows" id="coverageRows"></div>
+  </div>
+
   <!-- TICKET GRID -->
   <div id="results">
     <div class="empty">
@@ -655,6 +736,26 @@ function combos2(ticket) {
   return out;
 }
 
+/** All C(6,5)=6 five-element combinations from a sorted 6-number ticket */
+function combos5(ticket) {
+  const out = [];
+  for (let i = 0; i < 6; i++) {
+    const sub = ticket.filter((_, idx) => idx !== i);
+    out.push(sub.join('_'));
+  }
+  return out;
+}
+
+/** The single C(6,6)=1 combination — the ticket itself */
+function combos6(ticket) {
+  return [ticket.join('_')];
+}
+
+/* Total possible combinations from 45 numbers */
+const TOTAL_C45_4 = 148995;   // C(45,4)
+const TOTAL_C45_5 = 1221759;  // C(45,5)
+const TOTAL_C45_6 = 8145060;  // C(45,6)
+
 /** Count numbers shared between two sorted tickets */
 function overlap(a, b) {
   const setB = new Set(b);
@@ -704,6 +805,8 @@ function generateTickets(n, baseAttempts, rng) {
   const tickets  = [];
   const covered4 = new Set();
   const covered2 = new Set();     // ← NEW: track covered pairs
+  const covered5 = new Set();
+  const covered6 = new Set();
 
   // Frequency tables
   const freq     = new Array(46).fill(0);  // per-number frequency
@@ -750,6 +853,8 @@ function generateTickets(n, baseAttempts, rng) {
     tickets.push(best);
     combos4(best).forEach(c => covered4.add(c));
     combos2(best).forEach(c => covered2.add(c));  // ← NEW: track pairs
+    combos5(best).forEach(c => covered5.add(c));
+    combos6(best).forEach(c => covered6.add(c));
     best.forEach(num => freq[num]++);
 
     // Update pair-frequency map for each pair in this ticket
@@ -764,7 +869,7 @@ function generateTickets(n, baseAttempts, rng) {
     }
   }
 
-  return { tickets, coveredCount: covered4.size, pairCount: covered2.size };
+  return { tickets, coveredCount: covered4.size, pairCount: covered2.size, covered5: covered5.size, covered6: covered6.size };
 }
 
 /* =====================================================================
@@ -778,7 +883,59 @@ function buildFreqMap(tickets) {
   return map;
 }
 
-function renderTickets(tickets, coveredCount, pairCount, price) {
+function renderCoverage(covered4, covered5, covered6) {
+  const panel = document.getElementById('coveragePanel');
+  const rows  = document.getElementById('coverageRows');
+  panel.classList.add('visible');
+
+  const data = [
+    {
+      label: 'Tổ hợp 4 số  ·  C(45,4)',
+      covered: covered4,
+      total: TOTAL_C45_4,
+      barClass: 'bar-4',
+    },
+    {
+      label: 'Tổ hợp 5 số  ·  C(45,5)',
+      covered: covered5,
+      total: TOTAL_C45_5,
+      barClass: 'bar-5',
+    },
+    {
+      label: 'Tổ hợp 6 số (Jackpot)  ·  C(45,6)',
+      covered: covered6,
+      total: TOTAL_C45_6,
+      barClass: 'bar-6',
+    },
+  ];
+
+  rows.innerHTML = data.map(d => {
+    const pct     = d.covered / d.total * 100;
+    const pctDisp = pct < 0.01 ? pct.toExponential(2) : pct.toFixed(4);
+    const pctClass = pct >= 1 ? 'pct-high' : pct >= 0.1 ? 'pct-mid' : 'pct-low';
+    const barW = Math.min(100, pct < 0.0001 ? pct * 1e6 : pct * 10); // scale for visibility
+    const barWActual = (d.covered / d.total * 100);
+    // Use log scale for bar width so even tiny coverage is visible
+    const barWLog = d.covered > 0 ? Math.max(1, (Math.log10(d.covered) / Math.log10(d.total)) * 100) : 0;
+
+    return `
+      <div class="coverage-row">
+        <div class="coverage-row-header">
+          <div class="coverage-row-label">${d.label}</div>
+          <div class="coverage-row-nums">
+            ${d.covered.toLocaleString('vi-VN')}
+            <span class="frac-denom"> / ${d.total.toLocaleString('vi-VN')}</span>
+            <span class="pct ${pctClass}">${pctDisp}%</span>
+          </div>
+        </div>
+        <div class="coverage-bar-track">
+          <div class="coverage-bar-fill ${d.barClass}" style="width:${barWLog.toFixed(2)}%"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderTickets(tickets, coveredCount, pairCount, covered5, covered6, price) {
   const resultsEl = document.getElementById('results');
   resultsEl.innerHTML = '';
 
@@ -871,8 +1028,9 @@ function generate() {
   requestAnimationFrame(() => {
     setTimeout(() => {
       const rng = makePRNG(seed);
-      const { tickets, coveredCount, pairCount } = generateTickets(count, attempts, rng);
-      renderTickets(tickets, coveredCount, pairCount, price);
+      const { tickets, coveredCount, pairCount, covered5, covered6 } = generateTickets(count, attempts, rng);
+      renderCoverage(coveredCount, covered5, covered6);
+      renderTickets(tickets, coveredCount, pairCount, covered5, covered6, price);
       if (showProgress) overlay.classList.remove('visible');
     }, 30);
   });

@@ -3,1085 +3,509 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vietlott Mega 6/45 · Chọn Số Thông Minh</title>
+<title>Chỉ Cần Chọn Trúng · Thoát Đời Dalit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Phu+Du:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
 <style>
-/* ── Design tokens (bright theme) ── */
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
-  --bg:        #f4f6fb;
-  --bg2:       #edf0f8;
-  --surface:   #ffffff;
-  --border:    #e2e6f0;
-  --border2:   #c8cfdf;
+  --bg:        #0a0a0f;
+  --surface:   #12121a;
+  --surface2:  #1a1a28;
+  --border:    rgba(255,255,255,.08);
+  --border2:   rgba(255,255,255,.15);
+  --gold:      #f5c842;
+  --gold2:     #e6a800;
+  --gold-glow: rgba(245,200,66,.18);
   --red:       #e8272b;
-  --red2:      #c41f23;
-  --gold:      #f59e0b;
-  --green:     #16a34a;
-  --blue:      #2563eb;
-  --muted:     #94a3b8;
-  --text:      #1e293b;
-  --text2:     #64748b;
-  --text3:     #94a3b8;
-  --radius:    14px;
-  --ticket-w:  310px;
-  --shadow:    0 2px 12px rgba(30,41,59,.07);
-  --shadow-lg: 0 8px 32px rgba(30,41,59,.12);
+  --red-glow:  rgba(232,39,43,.2);
+  --text:      #f0ece0;
+  --text2:     #a09880;
+  --text3:     #5c5644;
+  --radius:    18px;
+  --font:      'Phu Du', sans-serif;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-weight: 400;
+  font-family: var(--font);
   min-height: 100vh;
   overflow-x: hidden;
 }
 
+/* ── Animated background ── */
 body::before {
   content: '';
   position: fixed; inset: 0;
-  background-image: radial-gradient(circle, #c5cedd 1px, transparent 1px);
-  background-size: 28px 28px;
-  opacity: .5;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(245,200,66,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(232,39,43,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 80% at 50% 50%, rgba(18,18,26,1) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Subtle dot grid */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
 }
 
 .wrap {
   position: relative; z-index: 1;
-  max-width: 1160px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 0 24px 90px;
+  padding: 0 24px 100px;
 }
 
-/* ══ HEADER ══ */
-header {
+/* ── HERO ── */
+.hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 52px 0 44px;
   text-align: center;
-}
-.header-chip {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--red);
-  background: #fff0f0;
-  border: 1px solid #fccbcc;
-  padding: 5px 16px;
-  border-radius: 99px;
-  margin-bottom: 20px;
-}
-h1 {
-  font-size: clamp(2.6rem, 7vw, 5rem);
-  font-weight: 700;
-  letter-spacing: -.02em;
-  line-height: 1.05;
-  color: var(--text);
-}
-h1 em { font-style: normal; color: var(--red); }
-.header-sub {
-  margin-top: 14px;
-  font-size: .95rem;
-  color: var(--text2);
-  font-weight: 300;
-  max-width: 520px;
-  line-height: 1.7;
+  padding: 100px 0 72px;
 }
 
-/* ══ EXPLAINER ══ */
-.explainer {
+.hero-chip {
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(245,200,66,.1);
+  border: 1px solid rgba(245,200,66,.25);
+  padding: 6px 20px;
+  border-radius: 99px;
+  margin-bottom: 36px;
+  animation: fadeDown .7s ease both;
+}
+
+.hero-headline {
+  font-size: clamp(2.8rem, 8vw, 6.2rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -.01em;
+  color: var(--text);
+  animation: fadeDown .7s .1s ease both;
+}
+
+.hero-headline em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--gold) 0%, #ffb800 40%, var(--gold2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 32px rgba(245,200,66,.4));
+}
+
+.hero-divider {
+  width: 56px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  border-radius: 99px;
+  margin: 32px auto;
+  animation: fadeDown .7s .2s ease both;
+}
+
+.hero-tagline {
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+  font-weight: 400;
+  line-height: 1.75;
+  color: var(--text2);
+  max-width: 560px;
+  animation: fadeDown .7s .25s ease both;
+}
+
+.hero-tagline strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ── CARDS SECTION ── */
+.section-label {
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--text3);
+  text-align: center;
+  margin-bottom: 28px;
+  animation: fadeDown .7s .35s ease both;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 20px;
+  animation: fadeUp .8s .4s ease both;
+}
+
+@media (max-width: 780px) {
+  .cards { grid-template-columns: 1fr; }
+}
+
+.card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 32px 36px 24px;
-  margin-bottom: 28px;
-}
-.explainer-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 22px;
+  padding: 36px 32px 32px;
+  text-decoration: none;
+  color: inherit;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+  cursor: pointer;
 }
-.explainer-title::before {
+
+.card::before {
   content: '';
-  display: inline-block;
-  width: 4px; height: 20px;
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  transition: opacity .22s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border2);
+}
+
+/* Mega 6/45 card — gold accent */
+.card-mega::before {
+  background: linear-gradient(90deg, var(--gold), #ffb800, transparent);
+}
+.card-mega:hover {
+  box-shadow: 0 12px 48px rgba(245,200,66,.1), 0 2px 8px rgba(0,0,0,.5);
+}
+.card-mega .card-icon-bg {
+  background: var(--gold-glow);
+  border: 1px solid rgba(245,200,66,.2);
+}
+.card-mega .card-tag {
+  background: rgba(245,200,66,.1);
+  color: var(--gold);
+  border: 1px solid rgba(245,200,66,.2);
+}
+.card-mega .card-cta {
+  background: var(--gold);
+  color: #0a0a0f;
+}
+.card-mega .card-cta:hover {
+  background: #ffd04d;
+  box-shadow: 0 4px 20px rgba(245,200,66,.35);
+}
+
+/* Keno card — red accent */
+.card-keno::before {
+  background: linear-gradient(90deg, var(--red), #ff6b6b, transparent);
+}
+.card-keno:hover {
+  box-shadow: 0 12px 48px rgba(232,39,43,.1), 0 2px 8px rgba(0,0,0,.5);
+}
+.card-keno .card-icon-bg {
+  background: rgba(232,39,43,.12);
+  border: 1px solid rgba(232,39,43,.2);
+}
+.card-keno .card-tag {
+  background: rgba(232,39,43,.1);
+  color: #ff7070;
+  border: 1px solid rgba(232,39,43,.2);
+}
+.card-keno .card-cta {
   background: var(--red);
-  border-radius: 99px;
+  color: #fff;
+}
+.card-keno .card-cta:hover {
+  background: #ff3d40;
+  box-shadow: 0 4px 20px rgba(232,39,43,.4);
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-icon-bg {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
   flex-shrink: 0;
 }
-.exp-body { overflow: hidden; transition: max-height .38s ease, opacity .38s ease; }
-.exp-body.collapsed { max-height: 0 !important; opacity: 0; }
 
-.explainer-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.exp-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 18px;
-}
-.exp-card-icon { font-size: 1.4rem; margin-bottom: 8px; }
-.exp-card-title { font-size: .85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-.exp-card-body  { font-size: .8rem; color: var(--text2); line-height: 1.65; }
-.exp-card-body strong { color: var(--text); }
-
-.exp-steps {
-  background: var(--bg2);
-  border-radius: 10px;
-  padding: 18px 22px;
-  margin-bottom: 4px;
-}
-.exp-steps-title {
-  font-family: 'DM Mono', monospace;
+.card-tag {
   font-size: 10px;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 14px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
 }
-.exp-step {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  margin-bottom: 10px;
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.card-subtitle {
   font-size: .82rem;
-  color: var(--text2);
-  line-height: 1.65;
-}
-.exp-step:last-child { margin-bottom: 0; }
-.step-num {
-  flex-shrink: 0;
-  width: 22px; height: 22px;
-  background: var(--red);
-  color: #fff;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .72rem;
-  font-weight: 700;
-  margin-top: 1px;
-}
-.exp-step strong { color: var(--text); }
-
-.exp-toggle {
-  background: none; border: none; cursor: pointer;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: .8rem;
-  color: var(--blue);
-  padding: 6px 0 0;
-  display: flex; align-items: center; gap: 4px;
-}
-.exp-toggle:hover { text-decoration: underline; }
-
-/* ══ CONTROLS ══ */
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 28px 32px 24px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 20px;
-  align-items: end;
-  margin-bottom: 12px;
-}
-@media (max-width: 780px) {
-  .panel { grid-template-columns: 1fr 1fr; }
-  .panel .btn-gen { grid-column: span 2; }
-}
-@media (max-width: 480px) {
-  .panel { grid-template-columns: 1fr; }
-  .panel .btn-gen { grid-column: span 1; }
-  .explainer { padding: 22px 18px 18px; }
-}
-
-.field label {
-  display: block;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: var(--text2);
-  margin-bottom: 8px;
-}
-.field input {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  padding: 10px 14px;
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  font-size: .9rem;
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-}
-.field input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(232,39,43,.1); }
-.field input::placeholder { color: var(--muted); }
-
-.btn {
-  border: none; cursor: pointer;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 10px 22px;
-  transition: all .18s;
-  white-space: nowrap;
-  font-size: .9rem;
-}
-.btn-gen {
-  background: var(--red);
-  color: #fff;
-  font-size: 1rem;
-  padding: 12px 32px;
-  box-shadow: 0 3px 10px rgba(232,39,43,.28);
-}
-.btn-gen:hover { background: var(--red2); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(232,39,43,.35); }
-.btn-gen:active { transform: translateY(0); }
-
-.btn-sec {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  color: var(--text2);
-  box-shadow: var(--shadow);
-}
-.btn-sec:hover { border-color: var(--text2); color: var(--text); }
-
-.seed-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 2px 2px;
-  margin-bottom: 26px;
-}
-.seed-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text2);
-  cursor: pointer;
-  user-select: none;
-  display: flex; align-items: center; gap: 6px;
-}
-.seed-label input[type=checkbox] { accent-color: var(--red); }
-#seedInput {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  padding: 5px 10px;
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  font-size: .8rem;
-  width: 110px;
-  outline: none;
-  transition: border-color .2s;
-  display: none;
-}
-#seedInput.visible { display: block; }
-#seedInput:focus { border-color: var(--red); }
-
-/* ══ STATS BAR ══ */
-.stats-bar {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 18px 28px;
-  margin-bottom: 24px;
-}
-.stats-left { display: flex; gap: 28px; flex-wrap: wrap; }
-.stat { display: flex; flex-direction: column; gap: 2px; }
-.stat-val { font-size: 1.5rem; font-weight: 700; line-height: 1; color: var(--red); }
-.stat-lbl {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
+  font-weight: 500;
   color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-top: -8px;
 }
-.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-.legend { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-.legend-item {
-  display: flex; gap: 5px; align-items: center;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px; letter-spacing: .08em; color: var(--text2);
+.card-desc {
+  font-size: .9rem;
+  color: var(--text2);
+  line-height: 1.75;
+  font-weight: 400;
+  flex: 1;
 }
-.legend-swatch { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
-.swatch-shared { background: #fcd34d; }
 
-/* ══ TICKET GRID ══ */
-#results {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--ticket-w), 1fr));
-  gap: 16px;
-}
-.ticket {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 18px 20px;
-  position: relative;
-  overflow: hidden;
-  animation: fadeUp .35s ease both;
-  transition: border-color .2s, box-shadow .2s, transform .2s;
-}
-.ticket:hover { border-color: var(--border2); box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.ticket::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--red) 0%, #f59e0b 60%, transparent 100%);
-}
-.ticket-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 14px;
-}
-.ticket-num {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px; letter-spacing: .15em; color: var(--text3);
-}
-.ticket-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px; letter-spacing: .08em;
-  padding: 3px 9px; border-radius: 99px; font-weight: 500;
-}
-.badge-ok   { background: #dcfce7; color: var(--green); border: 1px solid #bbf7d0; }
-.badge-warn { background: #fef9c3; color: #92400e;       border: 1px solid #fde68a; }
-
-.balls { display: flex; gap: 7px; flex-wrap: wrap; }
-.ball {
-  width: 43px; height: 43px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace;
-  font-weight: 500; font-size: .83rem;
-  transition: transform .15s, box-shadow .15s;
-  cursor: default; flex-shrink: 0;
-}
-.ball:hover { transform: scale(1.12); }
-.ball-low  { background: var(--bg); color: var(--text); border: 1px solid var(--border2); }
-.ball-mid  { background: var(--bg); color: var(--text); border: 1px solid var(--border2); }
-.ball-high { background: var(--bg); color: var(--text); border: 1px solid var(--border2); }
-.ball.shared { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; box-shadow: none; }
-
-.ticket-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 12px; padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-.ticket-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); line-height: 1.8; }
-.ticket-meta span { color: var(--text2); font-weight: 500; }
-
-.empty { grid-column: 1 / -1; text-align: center; padding: 80px 20px; }
-.empty-icon { font-size: 3rem; margin-bottom: 12px; }
-.empty p { font-size: .9rem; color: var(--text2); }
-
-.toast {
-  position: fixed; bottom: 32px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--text); color: #fff;
-  padding: 10px 24px; border-radius: 99px;
-  font-size: .83rem; font-family: 'DM Mono', monospace;
-  letter-spacing: .04em; opacity: 0;
-  transition: all .3s; z-index: 999; pointer-events: none;
-  box-shadow: var(--shadow-lg);
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ══ COVERAGE PANEL ══ */
-.coverage-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 24px 28px;
-  margin-bottom: 24px;
-  display: none;
-}
-.coverage-panel.visible { display: block; }
-.coverage-title {
-  font-size: .85rem;
-  font-weight: 600;
+.card-desc strong {
   color: var(--text);
-  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+.card-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feature {
   display: flex;
   align-items: center;
   gap: 10px;
+  font-size: .82rem;
+  color: var(--text2);
 }
-.coverage-title::before {
-  content: '';
-  display: inline-block;
-  width: 4px; height: 16px;
-  background: var(--red);
-  border-radius: 99px;
+
+.feature-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
-.coverage-rows { display: flex; flex-direction: column; gap: 14px; }
-.coverage-row { display: flex; flex-direction: column; gap: 6px; }
-.coverage-row-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+.card-mega .feature-dot { background: var(--gold); }
+.card-keno .feature-dot { background: var(--red); }
+
+.card-cta {
+  display: block;
+  text-align: center;
+  font-family: var(--font);
+  font-size: .95rem;
+  font-weight: 700;
+  padding: 13px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background .18s, box-shadow .18s, transform .18s;
+  margin-top: 4px;
+  letter-spacing: .02em;
 }
-.coverage-row-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text2);
+
+.card-cta:hover { transform: translateY(-1px); }
+.card-cta:active { transform: translateY(0); }
+
+/* ── DISCLAIMER ── */
+.disclaimer {
+  margin-top: 60px;
+  padding: 24px 28px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+  font-size: .78rem;
+  color: var(--text3);
+  line-height: 1.8;
+  animation: fadeUp .8s .55s ease both;
 }
-.coverage-row-nums {
-  font-family: 'DM Mono', monospace;
-  font-size: .8rem;
-  color: var(--text);
-  font-weight: 500;
+
+.disclaimer strong { color: var(--text2); font-weight: 500; }
+
+/* ── FOOTER ── */
+footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: .75rem;
+  color: var(--text3);
+  letter-spacing: .06em;
+  animation: fadeUp .8s .6s ease both;
 }
-.coverage-row-nums .frac-denom { color: var(--text3); font-weight: 400; }
-.coverage-row-nums .pct {
-  font-size: .72rem;
-  margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 99px;
-  font-weight: 600;
+
+/* ── Animations ── */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.pct-low  { background: #eff6ff; color: #1d4ed8; }
-.pct-mid  { background: #f0fdf4; color: var(--green); }
-.pct-high { background: #fff7ed; color: #c2410c; }
-.coverage-bar-track {
-  height: 6px;
-  background: var(--bg2);
-  border-radius: 99px;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Floating balls decoration */
+.deco-balls {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
   overflow: hidden;
 }
-.coverage-bar-fill {
-  height: 100%;
-  border-radius: 99px;
-  transition: width .6s cubic-bezier(.4,0,.2,1);
-  background: var(--red);
-}
-.coverage-bar-fill.bar-4 { background: linear-gradient(90deg, #e8272b, #f59e0b); }
-.coverage-bar-fill.bar-5 { background: linear-gradient(90deg, #7c3aed, #a855f7); }
-.coverage-bar-fill.bar-6 { background: linear-gradient(90deg, #0f766e, #14b8a6); }
-
-/* ══ PROGRESS OVERLAY ══ */
-.progress-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(244,246,251,.85);
-  backdrop-filter: blur(4px);
-  z-index: 100;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 16px;
-}
-.progress-overlay.visible { display: flex; }
-.progress-spinner {
-  width: 48px; height: 48px;
-  border: 3px solid var(--border2);
-  border-top-color: var(--red);
+.deco-ball {
+  position: absolute;
   border-radius: 50%;
-  animation: spin .7s linear infinite;
+  opacity: .04;
+  animation: float linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-.progress-text {
-  font-family: 'DM Mono', monospace;
-  font-size: .8rem;
-  color: var(--text2);
-  letter-spacing: .08em;
+@keyframes float {
+  0%   { transform: translateY(110vh) rotate(0deg); }
+  100% { transform: translateY(-10vh)  rotate(360deg); }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <!-- HEADER -->
-  <header>
-    <div class="header-chip">Vietlott · Mega 6/45</div>
-    <h1>Chọn Số <em>Thông Minh</em></h1>
-    <p class="header-sub">Tạo vé số tối ưu bằng thuật toán heuristic — tối đa hóa xác suất trúng 4 số, giảm thiểu trùng lặp giữa các vé.</p>
-  </header>
-
-  <!-- EXPLAINER -->
-  <div class="explainer">
-    <div class="explainer-title">Mục tiêu &amp; Cách hoạt động</div>
-
-    <div class="exp-body" id="expBody">
-
-      <div class="explainer-grid">
-
-        <div class="exp-card">
-          <div class="exp-card-icon">🎯</div>
-          <div class="exp-card-title">Mục tiêu thực tế</div>
-          <div class="exp-card-body">
-            Thay vì theo đuổi độc đắc (xác suất 1/8.145.060), công cụ này tập trung <strong>tối đa hóa khả năng trúng 4 số</strong> — giải thưởng thực tế nhất khi chơi nhiều vé cùng lúc.
-          </div>
-        </div>
-
-        <div class="exp-card">
-          <div class="exp-card-icon">🔢</div>
-          <div class="exp-card-title">Bao phủ tổ hợp 4 số</div>
-          <div class="exp-card-body">
-            Mỗi vé chứa C(6,4) = <strong>15 tổ hợp 4 số</strong>. Mỗi vé mới được chọn để thêm nhiều tổ hợp 4 số <strong>chưa có</strong> ở các vé trước, giảm thiểu lãng phí.
-          </div>
-        </div>
-
-        <div class="exp-card">
-          <div class="exp-card-icon">🚫</div>
-          <div class="exp-card-title">Phạt cứng trùng lặp</div>
-          <div class="exp-card-body">
-            Thay vì phạt tuyến tính nhẹ, bất kỳ vé nào trùng <strong>≥ 3 số</strong> với vé cũ sẽ bị <strong>loại hoàn toàn</strong> — buộc thuật toán tìm vé thực sự đa dạng.
-          </div>
-        </div>
-
-        <div class="exp-card">
-          <div class="exp-card-icon">↔️</div>
-          <div class="exp-card-title">Bao phủ cặp số</div>
-          <div class="exp-card-body">
-            Theo dõi tần suất <strong>cặp số</strong> (thay vì số đơn lẻ) để ưu tiên bốc những cặp chưa từng xuất hiện — tăng tốc phủ tổ hợp 4 số và phân tán đều hơn.
-          </div>
-        </div>
-
-        <div class="exp-card">
-          <div class="exp-card-icon">📈</div>
-          <div class="exp-card-title">Tìm kiếm thích ứng</div>
-          <div class="exp-card-body">
-            Số lần thử <strong>tăng dần</strong> theo thứ tự vé: vé sau khó tìm hơn, nên được tìm kiếm nhiều hơn. Vé cuối có thể gấp đôi số lần thử vé đầu.
-          </div>
-        </div>
-
-        <div class="exp-card">
-          <div class="exp-card-icon">⚖️</div>
-          <div class="exp-card-title">Cân bằng lẻ/chẵn &amp; thấp/cao</div>
-          <div class="exp-card-body">
-            Mỗi vé được khuyến khích có <strong>3 số lẻ / 3 số chẵn</strong> và <strong>3 số thấp (1–22) / 3 số cao (23–45)</strong>, tránh thiên lệch vùng số.
-          </div>
-        </div>
-
-      </div><!-- /grid -->
-
-      <div class="exp-steps">
-        <div class="exp-steps-title">Các bước của thuật toán</div>
-
-        <div class="exp-step">
-          <div class="step-num">1</div>
-          <div>Khởi tạo tập hợp rỗng chứa các <strong>tổ hợp 4 số đã bao phủ</strong>, bộ đếm tần suất số đơn lẻ, và bộ đếm tần suất <strong>cặp số</strong>.</div>
-        </div>
-        <div class="exp-step">
-          <div class="step-num">2</div>
-          <div>Với mỗi vé, sinh <em>N lần thử thích ứng</em> — số lần thử <strong>tăng dần theo thứ tự vé</strong> (vé thứ <em>i</em> thử <code>attempts + i×100</code> lần).</div>
-        </div>
-        <div class="exp-step">
-          <div class="step-num">3</div>
-          <div>Mỗi lần thử chọn số theo <strong>trọng số nghịch đảo tần suất cặp</strong>: ưu tiên số chưa từng đi cặp với nhiều số khác, không chỉ số đơn lẻ.</div>
-        </div>
-        <div class="exp-step">
-          <div class="step-num">4</div>
-          <div>Hàm chấm điểm: <strong>phạt cứng 1000×ov</strong> nếu trùng ≥ 3 số với bất kỳ vé cũ nào — loại thực tế mọi ứng viên xấu trước khi so sánh.</div>
-        </div>
-        <div class="exp-step">
-          <div class="step-num">5</div>
-          <div>Lần thử <strong>điểm cao nhất</strong> được chọn, cập nhật cả 3 cấu trúc dữ liệu: tập tổ hợp 4 số, tần suất số đơn, tần suất cặp số.</div>
-        </div>
-      </div>
-    </div><!-- /exp-body -->
-
-    <button class="exp-toggle" onclick="toggleExplainer(this)" id="expToggleBtn">▲ Thu gọn</button>
-  </div>
-
-  <!-- CONTROLS -->
-  <div class="panel">
-    <div class="field">
-      <label>Giá mỗi vé (VNĐ)</label>
-      <input type="number" id="price" value="10000" min="1000" step="1000" placeholder="10000" />
-    </div>
-    <div class="field">
-      <label>Số lượng vé</label>
-      <input type="number" id="count" value="6" min="1" max="100" step="1" placeholder="6" />
-    </div>
-    <div class="field">
-      <label>Số lần thử cơ bản / vé</label>
-      <input type="number" id="attempts" value="200" min="50" max="2000" step="50" placeholder="200" />
-    </div>
-    <button class="btn btn-gen" onclick="generate()">🎲 Tạo vé</button>
-  </div>
-
-  <!-- Seed row -->
-  <div class="seed-row">
-    <label class="seed-label">
-      <input type="checkbox" id="useSeed" onchange="toggleSeed(this)" />
-      Dùng hạt giống cố định
-    </label>
-    <input type="number" id="seedInput" value="42" placeholder="seed…" />
-  </div>
-
-  <!-- STATS BAR -->
-  <div class="stats-bar" id="statsBar" style="display:none">
-    <div class="stats-left">
-      <div class="stat">
-        <div class="stat-val" id="statTickets">—</div>
-        <div class="stat-lbl">Số vé</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="statCost">—</div>
-        <div class="stat-lbl">Tổng tiền</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="statCoverage">—</div>
-        <div class="stat-lbl">Tổ hợp 4 số đã phủ</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="statPairCoverage">—</div>
-        <div class="stat-lbl">Cặp số đã phủ</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="statMaxOverlap">—</div>
-        <div class="stat-lbl">Trùng lặp tối đa</div>
-      </div>
-    </div>
-    <div class="actions">
-      <div class="legend" id="legend"></div>
-      <button class="btn btn-sec" onclick="copyAll()">📋 Sao chép tất cả</button>
-      <button class="btn btn-sec" onclick="generate()">🔄 Tạo lại</button>
-    </div>
-  </div>
-
-  <!-- COVERAGE BREAKDOWN -->
-  <div class="coverage-panel" id="coveragePanel">
-    <div class="coverage-title">Độ phủ tổ hợp</div>
-    <div class="coverage-rows" id="coverageRows"></div>
-  </div>
-
-  <!-- TICKET GRID -->
-  <div id="results">
-    <div class="empty">
-      <div class="empty-icon">🎰</div>
-      <p>Nhập thông số và nhấn <strong>Tạo vé</strong> để bắt đầu.</p>
-    </div>
-  </div>
-
-</div><!-- /wrap -->
-
-<!-- PROGRESS OVERLAY -->
-<div class="progress-overlay" id="progressOverlay">
-  <div class="progress-spinner"></div>
-  <div class="progress-text" id="progressText">Đang tính toán…</div>
+<!-- Decorative floating balls -->
+<div class="deco-balls" aria-hidden="true">
+  <div class="deco-ball" style="width:120px;height:120px;background:#f5c842;left:8%;animation-duration:22s;animation-delay:0s;"></div>
+  <div class="deco-ball" style="width:80px;height:80px;background:#e8272b;left:25%;animation-duration:18s;animation-delay:-7s;"></div>
+  <div class="deco-ball" style="width:160px;height:160px;background:#f5c842;left:60%;animation-duration:28s;animation-delay:-14s;"></div>
+  <div class="deco-ball" style="width:60px;height:60px;background:#e8272b;left:80%;animation-duration:15s;animation-delay:-4s;"></div>
+  <div class="deco-ball" style="width:200px;height:200px;background:#f5c842;left:45%;animation-duration:35s;animation-delay:-20s;"></div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="wrap">
 
-<script>
-/* =====================================================================
-   PRNG — mulberry32 (seeded, deterministic)
-===================================================================== */
-function makePRNG(seed) {
-  let s = seed >>> 0;
-  return function() {
-    s |= 0; s = s + 0x6D2B79F5 | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = t + Math.imul(t ^ (t >>> 7), 61 | t) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-chip">🎰 Vietlott · Công Cụ Chọn Số</div>
 
-/* =====================================================================
-   Utilities
-===================================================================== */
-/** All C(6,4)=15 four-element combinations from a sorted 6-number ticket */
-function combos4(ticket) {
-  const out = [];
-  for (let i = 0; i < 6; i++)
-    for (let j = i+1; j < 6; j++)
-      for (let k = j+1; k < 6; k++)
-        for (let l = k+1; l < 6; l++)
-          out.push(`${ticket[i]}_${ticket[j]}_${ticket[k]}_${ticket[l]}`);
-  return out;
-}
+    <h1 class="hero-headline">
+      Chỉ Cần Chọn Trúng<br>
+      <em>Thoát Đời Dalit</em>
+    </h1>
 
-/** All C(6,2)=15 pair combinations from a sorted 6-number ticket */
-function combos2(ticket) {
-  const out = [];
-  for (let i = 0; i < 6; i++)
-    for (let j = i+1; j < 6; j++)
-      out.push(`${ticket[i]}_${ticket[j]}`);
-  return out;
-}
+    <div class="hero-divider"></div>
 
-/** All C(6,5)=6 five-element combinations from a sorted 6-number ticket */
-function combos5(ticket) {
-  const out = [];
-  for (let i = 0; i < 6; i++) {
-    const sub = ticket.filter((_, idx) => idx !== i);
-    out.push(sub.join('_'));
-  }
-  return out;
-}
+    <p class="hero-tagline">
+      <strong>Hành động nhỏ, kết quả to.</strong><br>
+      Người không chơi là người không trúng.
+    </p>
+  </section>
 
-/** The single C(6,6)=1 combination — the ticket itself */
-function combos6(ticket) {
-  return [ticket.join('_')];
-}
+  <!-- TOOLS -->
+  <p class="section-label">Chọn công cụ phù hợp</p>
 
-/* Total possible combinations from 45 numbers */
-const TOTAL_C45_4 = 148995;   // C(45,4)
-const TOTAL_C45_5 = 1221759;  // C(45,5)
-const TOTAL_C45_6 = 8145060;  // C(45,6)
+  <div class="cards">
 
-/** Count numbers shared between two sorted tickets */
-function overlap(a, b) {
-  const setB = new Set(b);
-  return a.filter(n => setB.has(n)).length;
-}
+    <!-- Mega 6/45 -->
+    <div class="card card-mega">
+      <div class="card-header">
+        <div class="card-icon-bg">🏆</div>
+        <div class="card-tag">Jackpot lớn</div>
+      </div>
 
-function oddCount(t) { return t.filter(n => n % 2 !== 0).length; }
-function lowCount(t) { return t.filter(n => n <= 22).length; }
+      <div>
+        <div class="card-subtitle">Vietlott</div>
+        <div class="card-title">Mega 6/45</div>
+      </div>
 
-/* =====================================================================
-   IMPROVEMENT 1: Scoring with HARD penalty for overlap > 2
-   - Original: linear penalty (ov - 2) * 8  →  can still pass with ov=4
-   - Improved:  death penalty 1000 * ov      →  effectively eliminates any ticket
-                                                  sharing 3+ numbers with an existing one
-===================================================================== */
-function scoreCandidate(candidate, existingTickets, covered4Set) {
-  // 1. New 4-number combos this ticket adds (primary objective)
-  const new4 = combos4(candidate).filter(c => !covered4Set.has(c)).length;
+      <p class="card-desc">
+        Thuật toán heuristic <strong>tối đa hóa xác suất trúng 4 số</strong>, giảm thiểu trùng lặp giữa các vé. Tự động cân bằng lẻ/chẵn và thấp/cao.
+      </p>
 
-  // 2. HARD overlap penalty — any ticket sharing ≥3 numbers is practically eliminated
-  let penalty = 0;
-  for (const t of existingTickets) {
-    const ov = overlap(candidate, t);
-    if (ov > 2) {
-      penalty += 1000 * ov;   // ← CHANGED: death penalty instead of (ov-2)*8
-    } else if (ov === 2) {
-      penalty += 1;            // ← slight discouragement for 2-overlap (was 0.5)
-    }
-  }
-
-  // 3. Balance bonus — reward 3 odd/even and 3 low/high
-  const oc = oddCount(candidate);
-  const lc = lowCount(candidate);
-  const balanceBonus = 2 - Math.abs(oc - 3) - Math.abs(lc - 3);
-
-  return new4 * 3 + balanceBonus - penalty;
-}
-
-/* =====================================================================
-   IMPROVEMENT 2 & 3: Generator with adaptive attempts + pair-frequency weighting
-   - Adaptive attempts: ticket i uses (baseAttempts + i * 100) tries
-   - Pair frequency:    track how often each pair (a,b) appears; bias selection
-                        toward numbers that have the fewest existing pair partners
-===================================================================== */
-function generateTickets(n, baseAttempts, rng) {
-  const ALL = Array.from({length: 45}, (_, i) => i + 1);
-  const tickets  = [];
-  const covered4 = new Set();
-  const covered2 = new Set();     // ← NEW: track covered pairs
-  const covered5 = new Set();
-  const covered6 = new Set();
-
-  // Frequency tables
-  const freq     = new Array(46).fill(0);  // per-number frequency
-  const pairFreq = {};                     // per-number: how many unique pair-partners it has
-
-  // Helper: for a given number, count how many distinct partners it has
-  function partnerCount(num) {
-    return pairFreq[num] ? pairFreq[num].size : 0;
-  }
-
-  for (let i = 0; i < n; i++) {
-    // IMPROVEMENT 2: scale attempts upward for later tickets
-    const currentAttempts = baseAttempts + i * 100;
-
-    let best = null, bestScore = -Infinity;
-
-    for (let a = 0; a < currentAttempts; a++) {
-
-      // IMPROVEMENT 3: pair-frequency weighted pool
-      // Weight = 1 / (partnerCount + 1)  →  numbers with fewer pair-partners are favoured
-      const pool = ALL.map(num => ({
-        num,
-        w: 1 / (partnerCount(num) + freq[num] * 0.5 + 1)
-        // Blend pair-partner count and raw frequency for richer diversity
-      }));
-
-      const candidate = [];
-
-      for (let pick = 0; pick < 6; pick++) {
-        const totalW = pool.reduce((s, x) => s + x.w, 0);
-        let r = rng() * totalW;
-        let chosen = pool[pool.length - 1];
-        for (const item of pool) { r -= item.w; if (r <= 0) { chosen = item; break; } }
-        candidate.push(chosen.num);
-        pool.splice(pool.indexOf(chosen), 1);
-      }
-      candidate.sort((a, b) => a - b);
-
-      const sc = scoreCandidate(candidate, tickets, covered4);
-      if (sc > bestScore) { bestScore = sc; best = candidate; }
-    }
-
-    // Commit best candidate
-    tickets.push(best);
-    combos4(best).forEach(c => covered4.add(c));
-    combos2(best).forEach(c => covered2.add(c));  // ← NEW: track pairs
-    combos5(best).forEach(c => covered5.add(c));
-    combos6(best).forEach(c => covered6.add(c));
-    best.forEach(num => freq[num]++);
-
-    // Update pair-frequency map for each pair in this ticket
-    for (let p = 0; p < best.length; p++) {
-      for (let q = p + 1; q < best.length; q++) {
-        const a = best[p], b = best[q];
-        if (!pairFreq[a]) pairFreq[a] = new Set();
-        if (!pairFreq[b]) pairFreq[b] = new Set();
-        pairFreq[a].add(b);
-        pairFreq[b].add(a);
-      }
-    }
-  }
-
-  return { tickets, coveredCount: covered4.size, pairCount: covered2.size, covered5: covered5.size, covered6: covered6.size };
-}
-
-/* =====================================================================
-   UI helpers
-===================================================================== */
-function formatVND(n) { return n.toLocaleString('vi-VN') + ' ₫'; }
-function ballClass(num) { return 'ball-low'; } // unified style, shared handled separately
-function buildFreqMap(tickets) {
-  const map = {};
-  for (const t of tickets) for (const n of t) map[n] = (map[n] || 0) + 1;
-  return map;
-}
-
-function renderCoverage(covered4, covered5, covered6) {
-  const panel = document.getElementById('coveragePanel');
-  const rows  = document.getElementById('coverageRows');
-  panel.classList.add('visible');
-
-  const data = [
-    {
-      label: 'Tổ hợp 4 số  ·  C(45,4)',
-      covered: covered4,
-      total: TOTAL_C45_4,
-      barClass: 'bar-4',
-    },
-    {
-      label: 'Tổ hợp 5 số  ·  C(45,5)',
-      covered: covered5,
-      total: TOTAL_C45_5,
-      barClass: 'bar-5',
-    },
-    {
-      label: 'Tổ hợp 6 số (Jackpot)  ·  C(45,6)',
-      covered: covered6,
-      total: TOTAL_C45_6,
-      barClass: 'bar-6',
-    },
-  ];
-
-  rows.innerHTML = data.map(d => {
-    const pct     = d.covered / d.total * 100;
-    const pctDisp = pct < 0.01 ? pct.toExponential(2) : pct.toFixed(4);
-    const pctClass = pct >= 1 ? 'pct-high' : pct >= 0.1 ? 'pct-mid' : 'pct-low';
-    const barW = Math.min(100, pct < 0.0001 ? pct * 1e6 : pct * 10); // scale for visibility
-    const barWActual = (d.covered / d.total * 100);
-    // Use log scale for bar width so even tiny coverage is visible
-    const barWLog = d.covered > 0 ? Math.max(1, (Math.log10(d.covered) / Math.log10(d.total)) * 100) : 0;
-
-    return `
-      <div class="coverage-row">
-        <div class="coverage-row-header">
-          <div class="coverage-row-label">${d.label}</div>
-          <div class="coverage-row-nums">
-            ${d.covered.toLocaleString('vi-VN')}
-            <span class="frac-denom"> / ${d.total.toLocaleString('vi-VN')}</span>
-            <span class="pct ${pctClass}">${pctDisp}%</span>
-          </div>
+      <div class="card-features">
+        <div class="feature">
+          <div class="feature-dot"></div>
+          <span>Bao phủ tổ hợp 4 số tối ưu</span>
         </div>
-        <div class="coverage-bar-track">
-          <div class="coverage-bar-fill ${d.barClass}" style="width:${barWLog.toFixed(2)}%"></div>
+        <div class="feature">
+          <div class="feature-dot"></div>
+          <span>Phạt cứng khi trùng ≥ 3 số</span>
         </div>
-      </div>`;
-  }).join('');
-}
-
-function renderTickets(tickets, coveredCount, pairCount, covered5, covered6, price) {
-  const resultsEl = document.getElementById('results');
-  resultsEl.innerHTML = '';
-
-  const freqMap    = buildFreqMap(tickets);
-  const sharedNums = new Set(Object.entries(freqMap).filter(([,v])=>v>1).map(([k])=>+k));
-
-  let maxOv = 0;
-  for (let i = 0; i < tickets.length; i++)
-    for (let j = i+1; j < tickets.length; j++)
-      maxOv = Math.max(maxOv, overlap(tickets[i], tickets[j]));
-
-  document.getElementById('statsBar').style.display = 'flex';
-  document.getElementById('statTickets').textContent    = tickets.length;
-  document.getElementById('statCost').textContent       = formatVND(tickets.length * price);
-  document.getElementById('statCoverage').textContent   = coveredCount.toLocaleString('vi-VN');
-  document.getElementById('statPairCoverage').textContent = pairCount.toLocaleString('vi-VN');
-  document.getElementById('statMaxOverlap').textContent = maxOv;
-
-  // Highlight max overlap: green if ≤2, red if >2
-  const ovEl = document.getElementById('statMaxOverlap');
-  ovEl.style.color = maxOv > 2 ? 'var(--red)' : 'var(--green)';
-
-  document.getElementById('legend').innerHTML = `
-    <div class="legend-item"><div class="legend-swatch swatch-shared"></div>Số dùng chung</div>
-  `;
-
-  tickets.forEach((ticket, idx) => {
-    const oc = oddCount(ticket);
-    const lc = lowCount(ticket);
-    const balanced = oc >= 2 && oc <= 4 && lc >= 2 && lc <= 4;
-
-    const maxTicketOv = tickets
-      .filter((_, i) => i !== idx)
-      .map(other => overlap(ticket, other))
-      .reduce((m, v) => Math.max(m, v), 0);
-
-    const card = document.createElement('div');
-    card.className = 'ticket';
-    card.style.animationDelay = `${idx * 40}ms`;
-
-    const ballsHTML = ticket.map(n => {
-      const isShared = sharedNums.has(n);
-      return `<div class="ball ${ballClass(n)}${isShared?' shared':''}" title="${isShared?'Số này xuất hiện ở nhiều vé':''}">${String(n).padStart(2,'0')}</div>`;
-    }).join('');
-
-    // Overlap badge: green if clean (≤2), amber if borderline
-    const ovBadgeClass = maxTicketOv <= 2 ? 'badge-ok' : 'badge-warn';
-    const ovBadgeText  = maxTicketOv <= 2 ? 'ĐỘC LẬP' : `TRÙNG ${maxTicketOv}`;
-
-    card.innerHTML = `
-      <div class="ticket-header">
-        <div class="ticket-num">VÉ #${String(idx+1).padStart(2,'0')}</div>
-        <div style="display:flex;gap:5px;align-items:center">
-          <div class="ticket-badge ${balanced?'badge-ok':'badge-warn'}">${balanced?'CÂN BẰNG':'LỆCH'}</div>
-          <div class="ticket-badge ${ovBadgeClass}">${ovBadgeText}</div>
+        <div class="feature">
+          <div class="feature-dot"></div>
+          <span>Tìm kiếm thích ứng theo thứ tự vé</span>
+        </div>
+        <div class="feature">
+          <div class="feature-dot"></div>
+          <span>Hỗ trợ hạt giống cố định (seed)</span>
         </div>
       </div>
-      <div class="balls">${ballsHTML}</div>
-      <div class="ticket-footer">
-        <div class="ticket-meta">LẺ/CHẴN <span>${oc}/${6-oc}</span> &nbsp;·&nbsp; THẤP/CAO <span>${lc}/${6-lc}</span></div>
-        <div class="ticket-meta">TRÙNG TỐI ĐA <span style="color:${maxTicketOv<=2?'var(--green)':'var(--red)'}">${maxTicketOv}</span></div>
-      </div>`;
 
-    resultsEl.appendChild(card);
-  });
-}
+      <a href="PickNumMega645.html" class="card-cta">🎲 Chọn số Mega 6/45 →</a>
+    </div>
 
-/* =====================================================================
-   Entry points
-===================================================================== */
-function generate() {
-  const price    = Math.max(1000, parseInt(document.getElementById('price').value)    || 10000);
-  const count    = Math.min(100,  Math.max(1, parseInt(document.getElementById('count').value)    || 6));
-  const attempts = Math.min(2000, Math.max(50, parseInt(document.getElementById('attempts').value) || 200));
-  const useSeed  = document.getElementById('useSeed').checked;
-  const seed     = useSeed ? (parseInt(document.getElementById('seedInput').value) || 42) : Math.floor(Math.random() * 2**32);
+    <!-- Keno -->
+    <div class="card card-keno">
+      <div class="card-header">
+        <div class="card-icon-bg">⚡</div>
+        <div class="card-tag">Quay thưởng nhanh</div>
+      </div>
 
-  // Show progress overlay for larger jobs
-  const totalAttempts = count * attempts + count * (count - 1) / 2 * 100; // rough estimate
-  const showProgress  = count > 10 || attempts > 500;
-  const overlay  = document.getElementById('progressOverlay');
-  const progText = document.getElementById('progressText');
+      <div>
+        <div class="card-subtitle">Vietlott</div>
+        <div class="card-title">Keno</div>
+      </div>
 
-  if (showProgress) {
-    overlay.classList.add('visible');
-    progText.textContent = `Đang tạo ${count} vé… (${attempts}+ lần thử/vé)`;
-  }
+      <p class="card-desc">
+        Tối ưu xác suất cho trò chơi Keno quay nhanh — <strong>phân tích tần suất, tối đa hóa độ phủ</strong> và hỗ trợ nhiều chiến lược chọn số khác nhau.
+      </p>
 
-  // Defer to next frame so overlay renders before heavy computation
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      const rng = makePRNG(seed);
-      const { tickets, coveredCount, pairCount, covered5, covered6 } = generateTickets(count, attempts, rng);
-      renderCoverage(coveredCount, covered5, covered6);
-      renderTickets(tickets, coveredCount, pairCount, covered5, covered6, price);
-      if (showProgress) overlay.classList.remove('visible');
-    }, 30);
-  });
-}
+      <div class="card-features">
+        <div class="feature">
+          <div class="feature-dot"></div>
+          <span>Phân tích tần suất xuất hiện</span>
+        </div>
+        <div class="feature">
+          <div class="feature-dot"></div>
+          <span>Tối ưu bộ số theo mục tiêu</span>
+        </div>
+        <div class="feature">
+          <div class="feature-dot"></div>
+          <span>Quay thưởng mỗi 3–5 phút</span>
+        </div>
+        <div class="feature">
+          <div class="feature-dot"></div>
+          <span>Giao diện trực quan, dễ dùng</span>
+        </div>
+      </div>
 
-function toggleSeed(cb) {
-  document.getElementById('seedInput').classList.toggle('visible', cb.checked);
-}
+      <a href="KenoOptimizer.html" class="card-cta">⚡ Chọn số Keno →</a>
+    </div>
 
-function copyAll() {
-  const cards = document.querySelectorAll('#results .ticket');
-  if (!cards.length) { showToast('Chưa có vé nào!'); return; }
-  const lines = Array.from(cards).map((card, i) => {
-    const nums = Array.from(card.querySelectorAll('.ball')).map(b => b.textContent.trim());
-    return `Vé ${i+1}: ${nums.join(' - ')}`;
-  });
-  navigator.clipboard.writeText(lines.join('\n'))
-    .then(() => showToast('Đã sao chép ✓'))
-    .catch(() => showToast('Sao chép thất bại — hãy thử thủ công'));
-}
+  </div>
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2400);
-}
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    ⚠️ <strong>Lưu ý:</strong> Các công cụ này chỉ mang tính chất hỗ trợ tham khảo dựa trên thuật toán toán học.
+    Xổ số là trò chơi may rủi — không có phương pháp nào đảm bảo trúng thưởng.
+    Hãy chơi có trách nhiệm và trong giới hạn tài chính của bạn.
+  </div>
 
-let expOpen = true;
-function toggleExplainer() {
-  const body = document.getElementById('expBody');
-  const btn  = document.getElementById('expToggleBtn');
-  expOpen = !expOpen;
-  if (expOpen) {
-    body.style.maxHeight = body.scrollHeight + 'px';
-    body.classList.remove('collapsed');
-    btn.textContent = '▲ Thu gọn';
-  } else {
-    body.style.maxHeight = body.scrollHeight + 'px';
-    requestAnimationFrame(() => {
-      body.style.maxHeight = '0';
-      body.classList.add('collapsed');
-    });
-    btn.textContent = '▼ Xem thêm';
-  }
-}
+  <!-- FOOTER -->
+  <footer>
+    <p>Vietlott · Công Cụ Chọn Số Thông Minh · 2026</p>
+  </footer>
 
-window.addEventListener('DOMContentLoaded', () => {
-  const body = document.getElementById('expBody');
-  body.style.maxHeight = body.scrollHeight + 'px';
-  generate();
-});
-</script>
+</div>
+
 </body>
 </html>

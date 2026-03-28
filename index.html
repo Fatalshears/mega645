@@ -6,27 +6,30 @@
 <title>Chỉ Cần Chọn Trúng · Thoát Đời Dalit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Phu+Du:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Phu+Du:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" crossorigin="anonymous" />
 
 <style>
 /* ── Reset & base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:        #0a0a0f;
-  --surface:   #12121a;
-  --surface2:  #1a1a28;
-  --border:    rgba(255,255,255,.08);
-  --border2:   rgba(255,255,255,.15);
-  --gold:      #f5c842;
-  --gold2:     #e6a800;
-  --gold-glow: rgba(245,200,66,.18);
-  --red:       #e8272b;
-  --red-glow:  rgba(232,39,43,.2);
-  --text:      #f0ece0;
-  --text2:     #a09880;
-  --text3:     #5c5644;
-  --radius:    18px;
+  --bg:        #fffbf0;
+  --bg2:       #fff7e0;
+  --surface:   #ffffff;
+  --border:    #e8dfc8;
+  --border2:   #d4c8a8;
+  --gold:      #d4920a;
+  --gold-lt:   #fef3c7;
+  --gold-md:   #fbbf24;
+  --red:       #dc2626;
+  --red-lt:    #fef2f2;
+  --red-md:    #ef4444;
+  --text:      #1c1408;
+  --text2:     #6b5a3e;
+  --text3:     #a8906a;
+  --radius:    16px;
+  --shadow:    0 2px 16px rgba(180,140,60,.10);
+  --shadow-lg: 0 8px 40px rgba(180,140,60,.16);
   --font:      'Phu Du', sans-serif;
 }
 
@@ -40,197 +43,295 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Animated background ── */
+/* Warm noise texture overlay */
 body::before {
   content: '';
   position: fixed; inset: 0;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(245,200,66,.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(232,39,43,.06) 0%, transparent 60%),
-    radial-gradient(ellipse 100% 80% at 50% 50%, rgba(18,18,26,1) 0%, transparent 100%);
+  background-image:
+    radial-gradient(ellipse 70% 40% at 15% 0%, rgba(251,191,36,.18) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 35% at 90% 90%, rgba(220,38,38,.08) 0%, transparent 55%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Subtle dot grid */
+/* Dot grid */
 body::after {
   content: '';
   position: fixed; inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image: radial-gradient(circle, rgba(180,140,60,.12) 1px, transparent 1px);
+  background-size: 28px 28px;
   pointer-events: none;
   z-index: 0;
 }
 
 .wrap {
   position: relative; z-index: 1;
-  max-width: 960px;
+  max-width: 1020px;
   margin: 0 auto;
   padding: 0 24px 100px;
 }
 
-/* ── HERO ── */
-.hero {
+/* ══ HERO SECTION ══ */
+.hero-section {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0;
+  padding: 64px 0 56px;
+  min-height: 420px;
+}
+
+/* Left meme: hoa hồng — seated, chilling, "I just found the winning numbers" energy */
+.meme-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 28px;
+  animation: slideInLeft .7s .2s ease both;
+}
+.meme-left img {
+  width: 200px;
+  border-radius: 16px;
+  border: 3px solid var(--border2);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(-3deg);
+  transition: transform .3s ease;
+}
+.meme-left img:hover { transform: rotate(0deg) scale(1.04); }
+.meme-caption {
+  margin-top: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 7px 13px;
+  font-size: .72rem;
+  color: var(--text2);
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  max-width: 190px;
+  text-align: center;
+  line-height: 1.5;
+  position: relative;
+}
+/* Speech-bubble triangle pointing right (toward headline) */
+.meme-caption::after {
+  content: '';
+  position: absolute;
+  right: -10px; top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-left-color: var(--border);
+}
+.meme-caption::before {
+  content: '';
+  position: absolute;
+  right: -8px; top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-left-color: var(--surface);
+  z-index: 1;
+}
+
+/* Center: headline */
+.hero-center {
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: 100px 0 72px;
+  gap: 0;
 }
 
 .hero-chip {
-  font-size: 11px;
-  letter-spacing: .22em;
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--gold);
-  background: rgba(245,200,66,.1);
-  border: 1px solid rgba(245,200,66,.25);
-  padding: 6px 20px;
+  background: var(--gold-lt);
+  border: 1.5px solid #f5d67a;
+  padding: 5px 18px;
   border-radius: 99px;
-  margin-bottom: 36px;
-  animation: fadeDown .7s ease both;
+  margin-bottom: 22px;
+  animation: fadeDown .6s ease both;
+  font-weight: 700;
 }
 
 .hero-headline {
-  font-size: clamp(2.8rem, 8vw, 6.2rem);
+  font-size: clamp(2.2rem, 5.5vw, 4.4rem);
   font-weight: 900;
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: -.01em;
   color: var(--text);
-  animation: fadeDown .7s .1s ease both;
+  animation: fadeDown .6s .1s ease both;
 }
 
 .hero-headline em {
   font-style: normal;
-  background: linear-gradient(135deg, var(--gold) 0%, #ffb800 40%, var(--gold2) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 32px rgba(245,200,66,.4));
+  color: var(--red);
+  position: relative;
+  display: inline-block;
+}
+/* Wavy underline on the em */
+.hero-headline em::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='4'%3E%3Cpath d='M0 2 Q5 0 10 2 Q15 4 20 2' fill='none' stroke='%23dc2626' stroke-width='2'/%3E%3C/svg%3E") repeat-x center;
 }
 
 .hero-divider {
-  width: 56px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold), transparent);
-  border-radius: 99px;
-  margin: 32px auto;
-  animation: fadeDown .7s .2s ease both;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px auto;
+  width: 200px;
+  animation: fadeDown .6s .18s ease both;
+}
+.hero-divider::before, .hero-divider::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: var(--border2);
+}
+.hero-divider-icon {
+  font-size: 1.1rem;
+  animation: wiggle 2s ease-in-out infinite;
+}
+@keyframes wiggle {
+  0%,100% { transform: rotate(-8deg); }
+  50%      { transform: rotate(8deg); }
 }
 
 .hero-tagline {
-  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+  font-size: clamp(.95rem, 2vw, 1.15rem);
   font-weight: 400;
-  line-height: 1.75;
+  line-height: 1.8;
   color: var(--text2);
-  max-width: 560px;
-  animation: fadeDown .7s .25s ease both;
+  max-width: 380px;
+  animation: fadeDown .6s .22s ease both;
 }
+.hero-tagline strong { color: var(--text); font-weight: 700; }
 
-.hero-tagline strong {
-  color: var(--text);
-  font-weight: 600;
+/* Right meme: kha banh — celebrating, "after winning" energy */
+.meme-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 28px;
+  animation: slideInRight .7s .2s ease both;
 }
+.meme-right img {
+  width: 200px;
+  border-radius: 16px;
+  border: 3px solid var(--border2);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(3deg);
+  transition: transform .3s ease;
+}
+.meme-right img:hover { transform: rotate(0deg) scale(1.04); }
+/* Speech-bubble triangle pointing left (toward headline) */
+.meme-right .meme-caption::after {
+  right: auto; left: -10px;
+  border-left-color: transparent;
+  border-right-color: var(--border);
+}
+.meme-right .meme-caption::before {
+  right: auto; left: -8px;
+  border-left-color: transparent;
+  border-right-color: var(--surface);
+}
+.meme-right .meme-caption { max-width: 190px; text-align: center; }
 
-/* ── CARDS SECTION ── */
+/* ══ CARDS ══ */
 .section-label {
   font-size: 10px;
   letter-spacing: .2em;
   text-transform: uppercase;
   color: var(--text3);
   text-align: center;
-  margin-bottom: 28px;
-  animation: fadeDown .7s .35s ease both;
+  margin-bottom: 20px;
+  animation: fadeUp .6s .38s ease both;
+  font-weight: 700;
 }
 
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: 20px;
-  animation: fadeUp .8s .4s ease both;
+  animation: fadeUp .7s .42s ease both;
 }
 
 @media (max-width: 780px) {
   .cards { grid-template-columns: 1fr; }
+  .hero-section {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 40px 0 32px;
+    min-height: unset;
+    gap: 24px;
+  }
+  .meme-left, .meme-right {
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+    justify-content: center;
+    gap: 14px;
+  }
+  .meme-left img, .meme-right img { width: 120px; transform: none; }
+  .meme-left { order: 2; }
+  .hero-center { order: 1; }
+  .meme-right { order: 3; }
+  .meme-caption::after, .meme-caption::before,
+  .meme-right .meme-caption::after, .meme-right .meme-caption::before { display: none; }
 }
 
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius);
-  padding: 36px 32px 32px;
+  padding: 32px 28px 28px;
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   position: relative;
   overflow: hidden;
   transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
   cursor: pointer;
+  box-shadow: var(--shadow);
 }
 
 .card::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0;
-  height: 2px;
-  transition: opacity .22s;
+  height: 3px;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  border-color: var(--border2);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Mega 6/45 card — gold accent */
-.card-mega::before {
-  background: linear-gradient(90deg, var(--gold), #ffb800, transparent);
-}
-.card-mega:hover {
-  box-shadow: 0 12px 48px rgba(245,200,66,.1), 0 2px 8px rgba(0,0,0,.5);
-}
-.card-mega .card-icon-bg {
-  background: var(--gold-glow);
-  border: 1px solid rgba(245,200,66,.2);
-}
-.card-mega .card-tag {
-  background: rgba(245,200,66,.1);
-  color: var(--gold);
-  border: 1px solid rgba(245,200,66,.2);
-}
-.card-mega .card-cta {
-  background: var(--gold);
-  color: #0a0a0f;
-}
-.card-mega .card-cta:hover {
-  background: #ffd04d;
-  box-shadow: 0 4px 20px rgba(245,200,66,.35);
-}
+/* Mega 6/45 — gold */
+.card-mega::before { background: linear-gradient(90deg, var(--gold-md), #f59e0b, transparent); }
+.card-mega:hover   { border-color: #f5d67a; }
+.card-mega .card-icon-bg { background: var(--gold-lt); border: 1.5px solid #f5d67a; }
+.card-mega .card-tag { background: var(--gold-lt); color: var(--gold); border: 1.5px solid #f5d67a; }
+.card-mega .card-cta { background: var(--gold); color: #fff; box-shadow: 0 3px 12px rgba(212,146,10,.28); }
+.card-mega .card-cta:hover { background: #b87a08; box-shadow: 0 5px 18px rgba(212,146,10,.4); }
+.card-mega .feature-dot { background: var(--gold-md); }
 
-/* Keno card — red accent */
-.card-keno::before {
-  background: linear-gradient(90deg, var(--red), #ff6b6b, transparent);
-}
-.card-keno:hover {
-  box-shadow: 0 12px 48px rgba(232,39,43,.1), 0 2px 8px rgba(0,0,0,.5);
-}
-.card-keno .card-icon-bg {
-  background: rgba(232,39,43,.12);
-  border: 1px solid rgba(232,39,43,.2);
-}
-.card-keno .card-tag {
-  background: rgba(232,39,43,.1);
-  color: #ff7070;
-  border: 1px solid rgba(232,39,43,.2);
-}
-.card-keno .card-cta {
-  background: var(--red);
-  color: #fff;
-}
-.card-keno .card-cta:hover {
-  background: #ff3d40;
-  box-shadow: 0 4px 20px rgba(232,39,43,.4);
-}
+/* Keno — red */
+.card-keno::before { background: linear-gradient(90deg, var(--red-md), #f87171, transparent); }
+.card-keno:hover   { border-color: #fca5a5; }
+.card-keno .card-icon-bg { background: var(--red-lt); border: 1.5px solid #fca5a5; }
+.card-keno .card-tag { background: var(--red-lt); color: var(--red); border: 1.5px solid #fca5a5; }
+.card-keno .card-cta { background: var(--red); color: #fff; box-shadow: 0 3px 12px rgba(220,38,38,.28); }
+.card-keno .card-cta:hover { background: #b91c1c; box-shadow: 0 5px 18px rgba(220,38,38,.4); }
+.card-keno .feature-dot { background: var(--red-md); }
 
 .card-header {
   display: flex;
@@ -240,178 +341,150 @@ body::after {
 }
 
 .card-icon-bg {
-  width: 52px; height: 52px;
-  border-radius: 14px;
+  width: 48px; height: 48px;
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   flex-shrink: 0;
 }
 
 .card-tag {
   font-size: 10px;
-  letter-spacing: .14em;
+  letter-spacing: .12em;
   text-transform: uppercase;
-  font-weight: 600;
-  padding: 4px 12px;
+  font-weight: 700;
+  padding: 4px 11px;
   border-radius: 99px;
 }
 
 .card-title {
-  font-size: 1.5rem;
+  font-size: 1.45rem;
   font-weight: 800;
   line-height: 1.2;
   color: var(--text);
 }
 
 .card-subtitle {
-  font-size: .82rem;
-  font-weight: 500;
+  font-size: .78rem;
+  font-weight: 600;
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: .1em;
-  margin-top: -8px;
+  margin-top: -6px;
 }
 
 .card-desc {
-  font-size: .9rem;
+  font-size: .88rem;
   color: var(--text2);
   line-height: 1.75;
   font-weight: 400;
   flex: 1;
 }
+.card-desc strong { color: var(--text); font-weight: 700; }
 
-.card-desc strong {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.card-features {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.feature {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: .82rem;
-  color: var(--text2);
-}
-
-.feature-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.card-mega .feature-dot { background: var(--gold); }
-.card-keno .feature-dot { background: var(--red); }
+.card-features { display: flex; flex-direction: column; gap: 7px; }
+.feature { display: flex; align-items: center; gap: 9px; font-size: .81rem; color: var(--text2); }
+.feature-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
 .card-cta {
   display: block;
   text-align: center;
   font-family: var(--font);
   font-size: .95rem;
-  font-weight: 700;
+  font-weight: 800;
   padding: 13px 28px;
   border-radius: 10px;
   text-decoration: none;
   transition: background .18s, box-shadow .18s, transform .18s;
-  margin-top: 4px;
-  letter-spacing: .02em;
+  margin-top: 6px;
+  letter-spacing: .03em;
 }
-
-.card-cta:hover { transform: translateY(-1px); }
+.card-cta:hover  { transform: translateY(-2px); }
 .card-cta:active { transform: translateY(0); }
 
-/* ── DISCLAIMER ── */
+/* ══ DISCLAIMER ══ */
 .disclaimer {
-  margin-top: 60px;
-  padding: 24px 28px;
-  background: rgba(255,255,255,.02);
-  border: 1px solid var(--border);
+  margin-top: 28px;
+  padding: 20px 24px;
+  background: rgba(220,38,38,.04);
+  border: 1.5px solid rgba(220,38,38,.12);
   border-radius: 12px;
   text-align: center;
   font-size: .78rem;
   color: var(--text3);
-  line-height: 1.8;
-  animation: fadeUp .8s .55s ease both;
+  line-height: 1.9;
+  animation: fadeUp .7s .58s ease both;
 }
+.disclaimer strong { color: var(--text2); font-weight: 600; }
 
-.disclaimer strong { color: var(--text2); font-weight: 500; }
-
-/* ── FOOTER ── */
+/* ══ FOOTER ══ */
 footer {
-  margin-top: 40px;
+  margin-top: 32px;
   text-align: center;
-  font-size: .75rem;
+  font-size: .74rem;
   color: var(--text3);
-  letter-spacing: .06em;
-  animation: fadeUp .8s .6s ease both;
+  letter-spacing: .07em;
+  animation: fadeUp .7s .62s ease both;
 }
 
 /* ── Animations ── */
 @keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-18px); }
+  from { opacity: 0; transform: translateY(-16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-/* Floating balls decoration */
-.deco-balls {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-.deco-ball {
-  position: absolute;
-  border-radius: 50%;
-  opacity: .04;
-  animation: float linear infinite;
-}
-@keyframes float {
-  0%   { transform: translateY(110vh) rotate(0deg); }
-  100% { transform: translateY(-10vh)  rotate(360deg); }
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 </style>
 </head>
 <body>
 
-<!-- Decorative floating balls -->
-<div class="deco-balls" aria-hidden="true">
-  <div class="deco-ball" style="width:120px;height:120px;background:#f5c842;left:8%;animation-duration:22s;animation-delay:0s;"></div>
-  <div class="deco-ball" style="width:80px;height:80px;background:#e8272b;left:25%;animation-duration:18s;animation-delay:-7s;"></div>
-  <div class="deco-ball" style="width:160px;height:160px;background:#f5c842;left:60%;animation-duration:28s;animation-delay:-14s;"></div>
-  <div class="deco-ball" style="width:60px;height:60px;background:#e8272b;left:80%;animation-duration:15s;animation-delay:-4s;"></div>
-  <div class="deco-ball" style="width:200px;height:200px;background:#f5c842;left:45%;animation-duration:35s;animation-delay:-20s;"></div>
-</div>
-
 <div class="wrap">
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-chip">🎰 Vietlott · Công Cụ Chọn Số</div>
+  <!-- ══ HERO ══ -->
+  <section class="hero-section">
 
-    <h1 class="hero-headline">
-      Chỉ Cần Chọn Trúng<br>
-      <em>Thoát Đời Dalit</em>
-    </h1>
+    <!-- Left meme: hoa hồng — calm & confident, "I already know the numbers" -->
+    <div class="meme-left">
+      <img src="huan-hoa-hong-co-lam-moi-co-an.gif" alt="Huấn Hoa Hồng chill" />
+      <div class="meme-caption">😌 "Có làm mới có ăn…<br>mà chơi số cũng là làm!"</div>
+    </div>
 
-    <div class="hero-divider"></div>
+    <!-- Center: headline -->
+    <div class="hero-center">
+      <div class="hero-chip">🎰 Vietlott · Công Cụ Chọn Số</div>
+      <h1 class="hero-headline">
+        Chỉ Cần Chọn Trúng<br>
+        <em>Thoát Đời Dalit</em>
+      </h1>
+      <div class="hero-divider">
+        <div class="hero-divider-icon">🎱</div>
+      </div>
+      <p class="hero-tagline">
+        <strong>Hành động nhỏ, kết quả to.</strong><br>
+        Người không chơi là người không trúng.
+      </p>
+    </div>
 
-    <p class="hero-tagline">
-      <strong>Hành động nhỏ, kết quả to.</strong><br>
-      Người không chơi là người không trúng.
-    </p>
+    <!-- Right meme: Khá Bảnh — hype, celebration mode -->
+    <div class="meme-right">
+      <img src="kha-banh-mua-quat.gif" alt="Khá Bảnh múa quạt" />
+      <div class="meme-caption">💃 Múa trước để ăn mừng<br>khi trúng số!</div>
+    </div>
+
   </section>
 
-  <!-- TOOLS -->
-  <p class="section-label">Chọn công cụ phù hợp</p>
+  <!-- ══ TOOLS ══ -->
+  <p class="section-label">Chọn công cụ phù hợp với bạn</p>
 
   <div class="cards">
 
@@ -421,35 +494,19 @@ footer {
         <div class="card-icon-bg">🏆</div>
         <div class="card-tag">Jackpot lớn</div>
       </div>
-
       <div>
         <div class="card-subtitle">Vietlott</div>
         <div class="card-title">Mega 6/45</div>
       </div>
-
       <p class="card-desc">
         Thuật toán heuristic <strong>tối đa hóa xác suất trúng 4 số</strong>, giảm thiểu trùng lặp giữa các vé. Tự động cân bằng lẻ/chẵn và thấp/cao.
       </p>
-
       <div class="card-features">
-        <div class="feature">
-          <div class="feature-dot"></div>
-          <span>Bao phủ tổ hợp 4 số tối ưu</span>
-        </div>
-        <div class="feature">
-          <div class="feature-dot"></div>
-          <span>Phạt cứng khi trùng ≥ 3 số</span>
-        </div>
-        <div class="feature">
-          <div class="feature-dot"></div>
-          <span>Tìm kiếm thích ứng theo thứ tự vé</span>
-        </div>
-        <div class="feature">
-          <div class="feature-dot"></div>
-          <span>Hỗ trợ hạt giống cố định (seed)</span>
-        </div>
+        <div class="feature"><div class="feature-dot"></div><span>Bao phủ tổ hợp 4 số tối ưu</span></div>
+        <div class="feature"><div class="feature-dot"></div><span>Phạt cứng khi trùng ≥ 3 số</span></div>
+        <div class="feature"><div class="feature-dot"></div><span>Tìm kiếm thích ứng theo thứ tự vé</span></div>
+        <div class="feature"><div class="feature-dot"></div><span>Hỗ trợ hạt giống cố định (seed)</span></div>
       </div>
-
       <a href="PickNumMega645.html" class="card-cta">🎲 Chọn số Mega 6/45 →</a>
     </div>
 
@@ -459,35 +516,19 @@ footer {
         <div class="card-icon-bg">⚡</div>
         <div class="card-tag">Quay thưởng nhanh</div>
       </div>
-
       <div>
         <div class="card-subtitle">Vietlott</div>
         <div class="card-title">Keno</div>
       </div>
-
       <p class="card-desc">
         Tối ưu xác suất cho trò chơi Keno quay nhanh — <strong>phân tích tần suất, tối đa hóa độ phủ</strong> và hỗ trợ nhiều chiến lược chọn số khác nhau.
       </p>
-
       <div class="card-features">
-        <div class="feature">
-          <div class="feature-dot"></div>
-          <span>Phân tích tần suất xuất hiện</span>
-        </div>
-        <div class="feature">
-          <div class="feature-dot"></div>
-          <span>Tối ưu bộ số theo mục tiêu</span>
-        </div>
-        <div class="feature">
-          <div class="feature-dot"></div>
-          <span>Quay thưởng mỗi 3–5 phút</span>
-        </div>
-        <div class="feature">
-          <div class="feature-dot"></div>
-          <span>Giao diện trực quan, dễ dùng</span>
-        </div>
+        <div class="feature"><div class="feature-dot"></div><span>Phân tích tần suất xuất hiện</span></div>
+        <div class="feature"><div class="feature-dot"></div><span>Tối ưu bộ số theo mục tiêu</span></div>
+        <div class="feature"><div class="feature-dot"></div><span>Quay thưởng mỗi 3–5 phút</span></div>
+        <div class="feature"><div class="feature-dot"></div><span>Giao diện trực quan, dễ dùng</span></div>
       </div>
-
       <a href="KenoOptimizer.html" class="card-cta">⚡ Chọn số Keno →</a>
     </div>
 

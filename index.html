@@ -42,7 +42,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Subtle dot-grid background */
 body::before {
   content: '';
   position: fixed; inset: 0;
@@ -332,10 +331,7 @@ h1 em { font-style: normal; color: var(--red); }
   font-size: 10px; letter-spacing: .08em; color: var(--text2);
 }
 .legend-swatch { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
-.swatch-low    { background: #2563eb; }
-.swatch-mid    { background: #9333ea; }
-.swatch-high   { background: #ea580c; }
-.swatch-shared { background: var(--gold); box-shadow: 0 0 5px rgba(245,158,11,.45); }
+.swatch-shared { background: #fcd34d; }
 
 /* ══ TICKET GRID ══ */
 #results {
@@ -392,10 +388,10 @@ h1 em { font-style: normal; color: var(--red); }
   cursor: default; flex-shrink: 0;
 }
 .ball:hover { transform: scale(1.12); }
-.ball-low  { background: #eff6ff; color: #1d4ed8; border: 2px solid #bfdbfe; }
-.ball-mid  { background: #faf5ff; color: #7e22ce; border: 2px solid #e9d5ff; }
-.ball-high { background: #fff7ed; color: #c2410c; border: 2px solid #fed7aa; }
-.ball.shared { box-shadow: 0 0 0 2.5px var(--gold), 0 0 10px rgba(245,158,11,.35); }
+.ball-low  { background: var(--bg); color: var(--text); border: 1px solid var(--border2); }
+.ball-mid  { background: var(--bg); color: var(--text); border: 1px solid var(--border2); }
+.ball-high { background: var(--bg); color: var(--text); border: 1px solid var(--border2); }
+.ball.shared { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; box-shadow: none; }
 
 .ticket-footer {
   display: flex; justify-content: space-between; align-items: center;
@@ -420,6 +416,34 @@ h1 em { font-style: normal; color: var(--red); }
   box-shadow: var(--shadow-lg);
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ══ PROGRESS OVERLAY ══ */
+.progress-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(244,246,251,.85);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.progress-overlay.visible { display: flex; }
+.progress-spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--border2);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.progress-text {
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem;
+  color: var(--text2);
+  letter-spacing: .08em;
+}
 </style>
 </head>
 <body>
@@ -437,6 +461,7 @@ h1 em { font-style: normal; color: var(--red); }
     <div class="explainer-title">Mục tiêu &amp; Cách hoạt động</div>
 
     <div class="exp-body" id="expBody">
+
       <div class="explainer-grid">
 
         <div class="exp-card">
@@ -456,10 +481,26 @@ h1 em { font-style: normal; color: var(--red); }
         </div>
 
         <div class="exp-card">
-          <div class="exp-card-icon">↔️</div>
-          <div class="exp-card-title">Tương quan thấp</div>
+          <div class="exp-card-icon">🚫</div>
+          <div class="exp-card-title">Phạt cứng trùng lặp</div>
           <div class="exp-card-body">
-            Hai vé bất kỳ được giới hạn <strong>chia sẻ tối đa 2 số</strong>. Trùng lặp trên 2 số bị phạt nặng, đảm bảo các vé "trải rộng" trên toàn dải 1–45.
+            Thay vì phạt tuyến tính nhẹ, bất kỳ vé nào trùng <strong>≥ 3 số</strong> với vé cũ sẽ bị <strong>loại hoàn toàn</strong> — buộc thuật toán tìm vé thực sự đa dạng.
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-card-icon">↔️</div>
+          <div class="exp-card-title">Bao phủ cặp số</div>
+          <div class="exp-card-body">
+            Theo dõi tần suất <strong>cặp số</strong> (thay vì số đơn lẻ) để ưu tiên bốc những cặp chưa từng xuất hiện — tăng tốc phủ tổ hợp 4 số và phân tán đều hơn.
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-card-icon">📈</div>
+          <div class="exp-card-title">Tìm kiếm thích ứng</div>
+          <div class="exp-card-body">
+            Số lần thử <strong>tăng dần</strong> theo thứ tự vé: vé sau khó tìm hơn, nên được tìm kiếm nhiều hơn. Vé cuối có thể gấp đôi số lần thử vé đầu.
           </div>
         </div>
 
@@ -478,23 +519,23 @@ h1 em { font-style: normal; color: var(--red); }
 
         <div class="exp-step">
           <div class="step-num">1</div>
-          <div>Khởi tạo tập hợp rỗng chứa các <strong>tổ hợp 4 số đã bao phủ</strong> và bộ đếm tần suất cho từng số 1–45.</div>
+          <div>Khởi tạo tập hợp rỗng chứa các <strong>tổ hợp 4 số đã bao phủ</strong>, bộ đếm tần suất số đơn lẻ, và bộ đếm tần suất <strong>cặp số</strong>.</div>
         </div>
         <div class="exp-step">
           <div class="step-num">2</div>
-          <div>Với mỗi vé cần tạo, sinh <em>N lần thử</em> (mặc định 200) bằng cách chọn ngẫu nhiên có trọng số — ưu tiên các số <strong>xuất hiện ít nhất</strong> để phân bố đều.</div>
+          <div>Với mỗi vé, sinh <em>N lần thử thích ứng</em> — số lần thử <strong>tăng dần theo thứ tự vé</strong> (vé thứ <em>i</em> thử <code>attempts + i×100</code> lần).</div>
         </div>
         <div class="exp-step">
           <div class="step-num">3</div>
-          <div>Mỗi lần thử được chấm điểm: <strong>điểm = tổ hợp 4 số mới × 3 + điểm cân bằng − phạt trùng lặp</strong>. Phạt tăng mạnh khi chia sẻ hơn 2 số với vé đã có.</div>
+          <div>Mỗi lần thử chọn số theo <strong>trọng số nghịch đảo tần suất cặp</strong>: ưu tiên số chưa từng đi cặp với nhiều số khác, không chỉ số đơn lẻ.</div>
         </div>
         <div class="exp-step">
           <div class="step-num">4</div>
-          <div>Lần thử <strong>điểm cao nhất</strong> được chọn làm vé chính thức, cập nhật tập hợp tổ hợp và bộ đếm tần suất.</div>
+          <div>Hàm chấm điểm: <strong>phạt cứng 1000×ov</strong> nếu trùng ≥ 3 số với bất kỳ vé cũ nào — loại thực tế mọi ứng viên xấu trước khi so sánh.</div>
         </div>
         <div class="exp-step">
           <div class="step-num">5</div>
-          <div>Kết quả: bộ vé có <strong>độ phủ tổ hợp tối đa</strong>, <strong>trùng lặp tối thiểu</strong> — chiến lược wheeling một phần hiện thực hóa qua tìm kiếm ngẫu nhiên có định hướng.</div>
+          <div>Lần thử <strong>điểm cao nhất</strong> được chọn, cập nhật cả 3 cấu trúc dữ liệu: tập tổ hợp 4 số, tần suất số đơn, tần suất cặp số.</div>
         </div>
       </div>
     </div><!-- /exp-body -->
@@ -513,7 +554,7 @@ h1 em { font-style: normal; color: var(--red); }
       <input type="number" id="count" value="6" min="1" max="100" step="1" placeholder="6" />
     </div>
     <div class="field">
-      <label>Số lần thử / vé</label>
+      <label>Số lần thử cơ bản / vé</label>
       <input type="number" id="attempts" value="200" min="50" max="2000" step="50" placeholder="200" />
     </div>
     <button class="btn btn-gen" onclick="generate()">🎲 Tạo vé</button>
@@ -544,6 +585,10 @@ h1 em { font-style: normal; color: var(--red); }
         <div class="stat-lbl">Tổ hợp 4 số đã phủ</div>
       </div>
       <div class="stat">
+        <div class="stat-val" id="statPairCoverage">—</div>
+        <div class="stat-lbl">Cặp số đã phủ</div>
+      </div>
+      <div class="stat">
         <div class="stat-val" id="statMaxOverlap">—</div>
         <div class="stat-lbl">Trùng lặp tối đa</div>
       </div>
@@ -564,6 +609,12 @@ h1 em { font-style: normal; color: var(--red); }
   </div>
 
 </div><!-- /wrap -->
+
+<!-- PROGRESS OVERLAY -->
+<div class="progress-overlay" id="progressOverlay">
+  <div class="progress-spinner"></div>
+  <div class="progress-text" id="progressText">Đang tính toán…</div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -595,6 +646,15 @@ function combos4(ticket) {
   return out;
 }
 
+/** All C(6,2)=15 pair combinations from a sorted 6-number ticket */
+function combos2(ticket) {
+  const out = [];
+  for (let i = 0; i < 6; i++)
+    for (let j = i+1; j < 6; j++)
+      out.push(`${ticket[i]}_${ticket[j]}`);
+  return out;
+}
+
 /** Count numbers shared between two sorted tickets */
 function overlap(a, b) {
   const setB = new Set(b);
@@ -605,18 +665,24 @@ function oddCount(t) { return t.filter(n => n % 2 !== 0).length; }
 function lowCount(t) { return t.filter(n => n <= 22).length; }
 
 /* =====================================================================
-   Scoring: score = coverage_gain×3 + balance_bonus − overlap_penalty
+   IMPROVEMENT 1: Scoring with HARD penalty for overlap > 2
+   - Original: linear penalty (ov - 2) * 8  →  can still pass with ov=4
+   - Improved:  death penalty 1000 * ov      →  effectively eliminates any ticket
+                                                  sharing 3+ numbers with an existing one
 ===================================================================== */
 function scoreCandidate(candidate, existingTickets, covered4Set) {
   // 1. New 4-number combos this ticket adds (primary objective)
   const new4 = combos4(candidate).filter(c => !covered4Set.has(c)).length;
 
-  // 2. Overlap penalty — sharply penalise sharing >2 numbers with any existing ticket
+  // 2. HARD overlap penalty — any ticket sharing ≥3 numbers is practically eliminated
   let penalty = 0;
   for (const t of existingTickets) {
     const ov = overlap(candidate, t);
-    if (ov > 2) penalty += (ov - 2) * 8;
-    else if (ov === 2) penalty += 0.5;
+    if (ov > 2) {
+      penalty += 1000 * ov;   // ← CHANGED: death penalty instead of (ov-2)*8
+    } else if (ov === 2) {
+      penalty += 1;            // ← slight discouragement for 2-overlap (was 0.5)
+    }
   }
 
   // 3. Balance bonus — reward 3 odd/even and 3 low/high
@@ -628,22 +694,42 @@ function scoreCandidate(candidate, existingTickets, covered4Set) {
 }
 
 /* =====================================================================
-   Main generator
+   IMPROVEMENT 2 & 3: Generator with adaptive attempts + pair-frequency weighting
+   - Adaptive attempts: ticket i uses (baseAttempts + i * 100) tries
+   - Pair frequency:    track how often each pair (a,b) appears; bias selection
+                        toward numbers that have the fewest existing pair partners
 ===================================================================== */
-function generateTickets(n, attempts, rng) {
+function generateTickets(n, baseAttempts, rng) {
   const ALL = Array.from({length: 45}, (_, i) => i + 1);
   const tickets  = [];
   const covered4 = new Set();
+  const covered2 = new Set();     // ← NEW: track covered pairs
 
-  // Track how often each number is used → bias towards under-used numbers
-  const freq = new Array(46).fill(0);
+  // Frequency tables
+  const freq     = new Array(46).fill(0);  // per-number frequency
+  const pairFreq = {};                     // per-number: how many unique pair-partners it has
+
+  // Helper: for a given number, count how many distinct partners it has
+  function partnerCount(num) {
+    return pairFreq[num] ? pairFreq[num].size : 0;
+  }
 
   for (let i = 0; i < n; i++) {
+    // IMPROVEMENT 2: scale attempts upward for later tickets
+    const currentAttempts = baseAttempts + i * 100;
+
     let best = null, bestScore = -Infinity;
 
-    for (let a = 0; a < attempts; a++) {
-      // Inverse-frequency weighted pool: spread numbers evenly across 1–45
-      const pool = ALL.map(num => ({ num, w: 1 / (freq[num] + 1) }));
+    for (let a = 0; a < currentAttempts; a++) {
+
+      // IMPROVEMENT 3: pair-frequency weighted pool
+      // Weight = 1 / (partnerCount + 1)  →  numbers with fewer pair-partners are favoured
+      const pool = ALL.map(num => ({
+        num,
+        w: 1 / (partnerCount(num) + freq[num] * 0.5 + 1)
+        // Blend pair-partner count and raw frequency for richer diversity
+      }));
+
       const candidate = [];
 
       for (let pick = 0; pick < 6; pick++) {
@@ -663,28 +749,36 @@ function generateTickets(n, attempts, rng) {
     // Commit best candidate
     tickets.push(best);
     combos4(best).forEach(c => covered4.add(c));
+    combos2(best).forEach(c => covered2.add(c));  // ← NEW: track pairs
     best.forEach(num => freq[num]++);
+
+    // Update pair-frequency map for each pair in this ticket
+    for (let p = 0; p < best.length; p++) {
+      for (let q = p + 1; q < best.length; q++) {
+        const a = best[p], b = best[q];
+        if (!pairFreq[a]) pairFreq[a] = new Set();
+        if (!pairFreq[b]) pairFreq[b] = new Set();
+        pairFreq[a].add(b);
+        pairFreq[b].add(a);
+      }
+    }
   }
 
-  return { tickets, coveredCount: covered4.size };
+  return { tickets, coveredCount: covered4.size, pairCount: covered2.size };
 }
 
 /* =====================================================================
    UI helpers
 ===================================================================== */
 function formatVND(n) { return n.toLocaleString('vi-VN') + ' ₫'; }
-function ballClass(num) {
-  if (num <= 15) return 'ball-low';
-  if (num <= 30) return 'ball-mid';
-  return 'ball-high';
-}
+function ballClass(num) { return 'ball-low'; } // unified style, shared handled separately
 function buildFreqMap(tickets) {
   const map = {};
   for (const t of tickets) for (const n of t) map[n] = (map[n] || 0) + 1;
   return map;
 }
 
-function renderTickets(tickets, coveredCount, price) {
+function renderTickets(tickets, coveredCount, pairCount, price) {
   const resultsEl = document.getElementById('results');
   resultsEl.innerHTML = '';
 
@@ -697,16 +791,18 @@ function renderTickets(tickets, coveredCount, price) {
       maxOv = Math.max(maxOv, overlap(tickets[i], tickets[j]));
 
   document.getElementById('statsBar').style.display = 'flex';
-  document.getElementById('statTickets').textContent  = tickets.length;
-  document.getElementById('statCost').textContent     = formatVND(tickets.length * price);
-  document.getElementById('statCoverage').textContent = coveredCount.toLocaleString('vi-VN');
+  document.getElementById('statTickets').textContent    = tickets.length;
+  document.getElementById('statCost').textContent       = formatVND(tickets.length * price);
+  document.getElementById('statCoverage').textContent   = coveredCount.toLocaleString('vi-VN');
+  document.getElementById('statPairCoverage').textContent = pairCount.toLocaleString('vi-VN');
   document.getElementById('statMaxOverlap').textContent = maxOv;
 
+  // Highlight max overlap: green if ≤2, red if >2
+  const ovEl = document.getElementById('statMaxOverlap');
+  ovEl.style.color = maxOv > 2 ? 'var(--red)' : 'var(--green)';
+
   document.getElementById('legend').innerHTML = `
-    <div class="legend-item"><div class="legend-swatch swatch-low"></div>1–15</div>
-    <div class="legend-item"><div class="legend-swatch swatch-mid"></div>16–30</div>
-    <div class="legend-item"><div class="legend-swatch swatch-high"></div>31–45</div>
-    <div class="legend-item"><div class="legend-swatch swatch-shared"></div>Dùng chung</div>
+    <div class="legend-item"><div class="legend-swatch swatch-shared"></div>Số dùng chung</div>
   `;
 
   tickets.forEach((ticket, idx) => {
@@ -728,15 +824,22 @@ function renderTickets(tickets, coveredCount, price) {
       return `<div class="ball ${ballClass(n)}${isShared?' shared':''}" title="${isShared?'Số này xuất hiện ở nhiều vé':''}">${String(n).padStart(2,'0')}</div>`;
     }).join('');
 
+    // Overlap badge: green if clean (≤2), amber if borderline
+    const ovBadgeClass = maxTicketOv <= 2 ? 'badge-ok' : 'badge-warn';
+    const ovBadgeText  = maxTicketOv <= 2 ? 'ĐỘC LẬP' : `TRÙNG ${maxTicketOv}`;
+
     card.innerHTML = `
       <div class="ticket-header">
         <div class="ticket-num">VÉ #${String(idx+1).padStart(2,'0')}</div>
-        <div class="ticket-badge ${balanced?'badge-ok':'badge-warn'}">${balanced?'CÂN BẰNG':'LỆCH'}</div>
+        <div style="display:flex;gap:5px;align-items:center">
+          <div class="ticket-badge ${balanced?'badge-ok':'badge-warn'}">${balanced?'CÂN BẰNG':'LỆCH'}</div>
+          <div class="ticket-badge ${ovBadgeClass}">${ovBadgeText}</div>
+        </div>
       </div>
       <div class="balls">${ballsHTML}</div>
       <div class="ticket-footer">
         <div class="ticket-meta">LẺ/CHẴN <span>${oc}/${6-oc}</span> &nbsp;·&nbsp; THẤP/CAO <span>${lc}/${6-lc}</span></div>
-        <div class="ticket-meta">TRÙNG TỐI ĐA <span>${maxTicketOv}</span></div>
+        <div class="ticket-meta">TRÙNG TỐI ĐA <span style="color:${maxTicketOv<=2?'var(--green)':'var(--red)'}">${maxTicketOv}</span></div>
       </div>`;
 
     resultsEl.appendChild(card);
@@ -753,9 +856,26 @@ function generate() {
   const useSeed  = document.getElementById('useSeed').checked;
   const seed     = useSeed ? (parseInt(document.getElementById('seedInput').value) || 42) : Math.floor(Math.random() * 2**32);
 
-  const rng = makePRNG(seed);
-  const { tickets, coveredCount } = generateTickets(count, attempts, rng);
-  renderTickets(tickets, coveredCount, price);
+  // Show progress overlay for larger jobs
+  const totalAttempts = count * attempts + count * (count - 1) / 2 * 100; // rough estimate
+  const showProgress  = count > 10 || attempts > 500;
+  const overlay  = document.getElementById('progressOverlay');
+  const progText = document.getElementById('progressText');
+
+  if (showProgress) {
+    overlay.classList.add('visible');
+    progText.textContent = `Đang tạo ${count} vé… (${attempts}+ lần thử/vé)`;
+  }
+
+  // Defer to next frame so overlay renders before heavy computation
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const rng = makePRNG(seed);
+      const { tickets, coveredCount, pairCount } = generateTickets(count, attempts, rng);
+      renderTickets(tickets, coveredCount, pairCount, price);
+      if (showProgress) overlay.classList.remove('visible');
+    }, 30);
+  });
 }
 
 function toggleSeed(cb) {
